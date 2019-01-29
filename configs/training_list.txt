@@ -1,0 +1,2 @@
+train/denoising/32/MicroCT_total93605_interval28.csv
+train/upsampling/x8/from-denoising/MicroCT.mhd train/denoising/MicroCT.mhd

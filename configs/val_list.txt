@@ -1,0 +1,1 @@
+validation/upsampling/x8/from-denoising/MicroCT.mhd validation/denoising/MicroCT.mhd
