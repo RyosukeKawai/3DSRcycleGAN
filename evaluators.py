@@ -65,8 +65,8 @@ def reconstruct_hr_img(gen, gen2,out_dir, dataset, rows=5, cols=5, converter=cha
         z = chainer.backends.cuda.to_cpu(z.array)
 
         y = adjust_array_for_output(y, rows, cols, range_type='0')
-        x = adjust_array_for_output(x, rows, cols, range_type='1')
-        z = adjust_array_for_output(z, rows, cols, range_type='1')
+        x = adjust_array_for_output(x, rows, cols, range_type='0')
+        z = adjust_array_for_output(z, rows, cols, range_type='0')
 
         preview_dir = '{}/preview'.format(out_dir)
         if not os.path.exists(preview_dir):

@@ -2,6 +2,7 @@
 """
 * @auther ryosuke
 * reference source :https://github.com/zEttOn86/3D-SRGAN
+* completely unpairSR
 """
 import os, sys, time,random,csv
 import numpy as np
@@ -21,9 +22,6 @@ class CycleganDataset(chainer.dataset.DatasetMixin):
         self._augmentation = augmentation
         # self._edge = 16
 
-
-
-
         # Read path to hr data and lr data
         path_pairs = []
         with open(path) as paths_file:
@@ -40,9 +38,15 @@ class CycleganDataset(chainer.dataset.DatasetMixin):
         ...
         xn,yn,zn
         """
-        coordinate_csv_path = path_pairs[0][0]
+        coordinate_csv_path = path_pairs[0][0]#LR 41529
+        coordinate_csv_path2 = path_pairs[0][1]#HR 48994pathes
         self._coordinate = pd.read_csv(os.path.join(self._root, coordinate_csv_path), names=("x","y","z")).values.tolist()
-        self._coordinate2 = random.sample(self._coordinate, len(self._coordinate))
+        self._coordinate_add = self.coordinate.sample(n=len(self._coordinate2)-len(self.coordinate),random_state=0)
+        self._coordinate = self._coordinate+self._coordinate_add
+
+        self._coordinate2 = pd.read_csv(os.path.join(self._root, coordinate_csv_path2),
+                                       names=("x", "y", "z")).values.tolist()
+
 
 
         self._dataset=[]
@@ -51,7 +55,7 @@ class CycleganDataset(chainer.dataset.DatasetMixin):
             print('   Org from: {}'.format(i[1]))
 
             #Read data and reshape
-            lr = (IO.read_mhd_and_raw(os.path.join(self._root, i[0])).astype(np.float32)-self._min)/(self._max-self._min) # =>[0, 1]
+            lr = (IO.read_mhd_and_raw(os.path.join(self._root, i[0])).astype(np.float32)/127.5)-1.
             hr = (IO.read_mhd_and_raw(os.path.join(self._root, i[1])).astype(np.float32)/127.5)-1. # x/255*2-1 => [-1, 1]
             # margin = ((8, self._patch_side),
             #          (8, self._patch_side),

@@ -5,12 +5,26 @@ import numpy as np
 import pandas as pd
 import SimpleITK as sitk
 import chainer
+import chainer.functions as F
 
 import util.ioFunction_version_4_3 as IO
 import util.yaml_utils  as yaml_utils
 from util.evaluations import calc_mse, calc_psnr, calc_score_on_fft_domain, calc_ssim, calc_zncc
 from model import Generator_SR
 
+
+def cropping(input,ref):
+    ref_map=np.zeros((ref,ref,ref))
+    rZ, rY, rX =ref_map.shape
+    _, _, iZ, iY, iX = input.shape
+    edgeZ, edgeY, edgeX = (iZ - rZ)//2, (iY - rY)//2, (iX - rX)//2
+    edgeZZ, edgeYY, edgeXX = iZ-edgeZ, iY-edgeY, iX-edgeX
+
+    _, X, _ = F.split_axis(input, (edgeX, edgeXX), axis=4)
+    _, X, _ = F.split_axis(X, (edgeY, edgeYY), axis=3)
+    _, X, _ = F.split_axis(X, (edgeZ, edgeZZ), axis=2)
+
+    return X
 
 def main():
     parser = argparse.ArgumentParser()
@@ -134,6 +148,7 @@ def main():
                 inferred_patch = gen(patch)
             # Generate probability map
             inferred_patch = inferred_patch.data # T48*48*48
+            inferred_patch = cropping(inferred_patch,32)#32*32*32
 
             if args.gpu >= 0:
                 inferred_patch = chainer.backends.cuda.to_cpu(inferred_patch)

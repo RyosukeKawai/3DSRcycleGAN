@@ -110,7 +110,7 @@ class Generator_SR(chainer.Chain):
 
         with self.init_scope():
             self.conv1 = L.ConvolutionND(ndim=3, in_channels=1, out_channels=ch, ksize=5, pad=get_valid_padding(5), initialW=initializer)
-            self.resblock = SkipConnection(in_channels=ch, out_channels=ch, ksize=3, num_of_layer=8)
+            self.resblock = SkipConnection(in_channels=ch, out_channels=ch, ksize=3, num_of_layer=16)
             self.conv2 = L.ConvolutionND(ndim=3, in_channels=ch, out_channels=1, ksize=5, pad=get_valid_padding(5), initialW=initializer)
 
     def forward(self, x):
@@ -126,7 +126,7 @@ class Generator_SR(chainer.Chain):
 ###############################################################################
 class Discriminator(chainer.Chain):
 
-    def __init__(self, ch=16):
+    def __init__(self, ch=64):
         w = chainer.initializers.Normal(scale=0.02)#Inspired by DCGAN
         super(Discriminator, self).__init__()
         with self.init_scope():
