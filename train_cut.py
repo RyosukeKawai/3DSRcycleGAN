@@ -28,14 +28,14 @@ output train1.mhd  train2.mhd
 """
 #coding:utf-8
 import os, sys, time
-import argparse, yaml, shutil, math
+import argparse
 import numpy as np
 import pandas as pd
 import SimpleITK as sitk
 import chainer
 
 import util.ioFunction_version_4_3 as IO
-import util.yaml_utils  as yaml_utils
+
 
 
 def main():
@@ -66,24 +66,27 @@ def main():
     #train cut
     train1,train2 = np.split(train,[800],1)
     print(train1.shape)
+
+    train21,train22 =np.split(train2,[410],1)
     print(train2.shape)
 
     #save images
 
     print("images save")
     train1 = train1.flatten()
-    train2 = train2.flatten()
+    train21 = train21.flatten()
 
     IO.write_mhd_and_raw_withoutSitk(train1, result_dir + '/train1.mhd',
                                      ndims=3, size=[1240,800,3600],
                                      space=[0.07, 0.066, 0.07])
 
-    IO.write_mhd_and_raw_withoutSitk(train2, result_dir + '/train2.mhd',
+    IO.write_mhd_and_raw_withoutSitk(train21, result_dir + '/train2.mhd',
                                      ndims=3, size=[1240,410,3600],
                                      space=[0.07, 0.066, 0.07])
 
 
-
+if __name__ == '__main__':
+    main()
 
 
 
