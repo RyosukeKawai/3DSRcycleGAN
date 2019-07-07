@@ -49,7 +49,7 @@ def main():
 
     parser.add_argument('--save_flag', type=bool, default=False,
                         help='Decision flag whether to save criteria image')
-    parser.add_argument('--filename_arg', '-F',type=str, default='test_fn',
+    parser.add_argument('--filename_arg', type=str, default='test_fn',
                         help='Which do you want to use val_fn or test_fn')
 
     args = parser.parse_args()
@@ -144,10 +144,10 @@ def main():
             # Extract patch from original image
             patch = tri[:,:,zi:zi+config.patch['patchside']+edge,yi:yi+config.patch['patchside']+edge,xi:xi+config.patch['patchside']+edge]
             with chainer.using_config('train', False), chainer.using_config('enable_backprop', False):
-                inferred_patch = gen(patch)# T48*48*48
+                inferred_patch = gen(patch)
                 inferred_patch = cropping(inferred_patch, 32)  # 32*32*32
             # Generate probability map
-            inferred_patch = inferred_patch.data
+            inferred_patch = inferred_patch.data # T48*48*48
 
             if args.gpu >= 0:
                 inferred_patch = chainer.backends.cuda.to_cpu(inferred_patch)
@@ -158,7 +158,7 @@ def main():
         inferred_map = inferred_map[:ze,:ye,:xe]
         overlap_count = overlap_count[:ze,:ye,:xe]
         inferred_map /= overlap_count
-        inferred_map = ((inferred_map+1.)/2*255)
+        inferred_map = ((inferred_map+1)/2*255)
 
 
         # Save prediction map

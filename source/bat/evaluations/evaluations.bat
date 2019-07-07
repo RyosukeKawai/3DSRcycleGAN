@@ -20,8 +20,7 @@ set SUM_LOG_PY=%A%summarize_results.py
 :: Variables that you should change
 set LOAD_MODEL_DIR=%BASE_PATH%results\training
 set DATA_DIR=G:\data
-set OUTPUT_DIR=results\inference\new_train_image\A5\val
-set FILENAME=val_fn
+set OUTPUT_DIR=results\inference\A5\val
 =======
 ::======================================================
 set LOG_DIR=%BASE_PATH%%OUTPUT_DIR%
@@ -34,7 +33,7 @@ echo DATA_DIR: %DATA_DIR% >> %LOG_DIR%/README.txt
 echo OUTPUT_DIR: %OUTPUT_DIR% >> %LOG_DIR%/README.txt
 
 :no_make_file
-for /l %%i in (15000,1000,19000) do call :run	%%i
+for /l %%i in (20000,1000,40000) do call :run	%%i
 =======
 
 
@@ -52,7 +51,7 @@ echo;
 echo MakeDirectory %LOG_DIR%\%arg1%
 
 ::Inference
-PYTHON %INFERENCE_PY% -g 0 -m %LOAD_MODEL_DIR%\gen_iter_%arg1%.npz -o %OUTPUT_DIR%\%arg1% -R %DATA_DIR% -F %FILENAME%
+PYTHON %INFERENCE_PY% -g 0 -m %LOAD_MODEL_DIR%\gen_iter_%arg1%.npz -o %OUTPUT_DIR%\%arg1% -R %DATA_DIR%
 
 :skip
 exit /b

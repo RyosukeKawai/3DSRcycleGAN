@@ -55,8 +55,8 @@ def main():
     # file_name='train/denoising/train1/downsampling/Tri/x8/train1.mhd'
     # file_name2 = 'train/denoising/train2/calc_mask2.mhd'
     # file_name = 'train/denoising/train2/train2.mhd'
-    file_name = 'train/denoising/MicroCT.mhd'
-    # file_name2 = 'train/calc_mask.mhd'
+    file_name = 'train/denoising/train1/downsampling/Tri/x8/train1.mhd'
+    file_name2 = 'train/denoising/train1/downsampling/Tri/x8/calc_mask1.mhd'
 
     #make output dir
     result_dir = os.path.join(args.base, args.out)
@@ -70,26 +70,21 @@ def main():
     print("train.mhd load done")
 
 
-    # print("mask.mhd load")
-    # sitkmask = sitk.ReadImage(os.path.join(args.root,file_name2))
-    # mask = sitk.GetArrayFromImage(sitkmask).astype("float32")#たしかこれ正規化済
-    # print("mask.mhd load done")
+    print("mask.mhd load")
+    sitkmask = sitk.ReadImage(os.path.join(args.root,file_name2))
+    mask = sitk.GetArrayFromImage(sitkmask).astype("float32")#たしかこれ正規化済
+    print("mask.mhd load done")
 
     #train cut
-    # train1=train[:,0:800,:]
-    train2 = train[:, 800:1210, :]
-    # mask1=mask[:,0:800,:]
-    # mask2 = mask[:, 800:1210, :]
-    # train1=train[:,0:1296,:]
-    #
-    # mask1=mask[:,0:1296,:]
-
+    # train1=train[:,:,:]
+    # train1,train2 =np.split(mask,[1296],1)
+    # mask1,mask2 =np.split(mask,[1680],0)
     # print(train1.shape)
     # print(mask1.shape)
 
 
-    # train11,train22 =np.split(train,[1210],1)
-    # mask11,mask22 =np.split(mask,[1210],1)
+    train11,train22 =np.split(train,[1210],1)
+    mask11,mask22 =np.split(mask,[1210],1)
     # print(train11.shape)
     # print(mask11.shape)
     # print(train2.shape)
@@ -100,30 +95,30 @@ def main():
     #save images
 
     print("images save")
-    # train1 = train1.flatten()
-    # mask1 = mask1.flatten()
-    train2 = train2.flatten()
+    train1 = train11.flatten()
+    mask1 = mask11.flatten()
+    # train2 = train2.flatten()
+    # mask1 = mask11.flatten()
     # mask2 = mask2.flatten()
-
+    # train1 = train11.flatten()
+    # mask1 = mask11.flatten()
     # IO.write_mhd_and_raw_withoutSitk(train1, result_dir + '/train1.mhd',
-    #                                  ndims=3, size=[1240,800,3600],
+    #                                  ndims=3, size=[1240,1296,1680],
     #                                  space=[0.070, 0.066, 0.070])
-    IO.write_mhd_and_raw_withoutSitk(train2, result_dir + '/train2.mhd',
-                                     ndims=3, size=[1240,410,3600],
-                                     space=[0.070, 0.066, 0.070])
+    # IO.write_mhd_and_raw_withoutSitk(train2, result_dir + '/train2.mhd',
+    #                                  ndims=3, size=[1240,1210,1920],
+    #                                  space=[0.070, 0.066, 0.070])
 
-    # IO.write_mhd_and_raw_withoutSitk(mask1, result_dir + '/calc_mask1.mhd',
-    #                                      ndims=3, size=[1240,800,3600],
-    #                                      space=[0.070, 0.066, 0.070])
+    IO.write_mhd_and_raw_withoutSitk(train1, result_dir + '/train1.mhd',
+                                         ndims=3, size=[1240,1210,1680],
+                                         space=[0.070, 0.066, 0.070])
+    IO.write_mhd_and_raw_withoutSitk(mask1, result_dir + '/calc_mask1.mhd',
+                                         ndims=3, size=[1240,1210,1680],
+                                         space=[0.070, 0.066, 0.070])
     # IO.write_mhd_and_raw_withoutSitk(mask2, result_dir + '/calc_mask2.mhd',
-    #                                      ndims=3, size=[1240,410,3600],
+    #                                      ndims=3, size=[1240,1210,1920],
     #                                      space=[0.070, 0.066, 0.070])
-    # IO.write_mhd_and_raw_withoutSitk(train1, result_dir + '/MicroCT.mhd',
-    #                                  ndims=3, size=[1240,1296,3600],
-    #                                  space=[0.070, 0.066, 0.070])
-    # IO.write_mhd_and_raw_withoutSitk(mask1, result_dir + '/calc_mask.mhd',
-    #                                      ndims=3, size=[1240,1296,3600],
-    #                                      space=[0.070, 0.066, 0.070])
+
 
 if __name__ == '__main__':
     main()

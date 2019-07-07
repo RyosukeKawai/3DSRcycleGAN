@@ -39,13 +39,13 @@ class CycleganDataset(chainer.dataset.DatasetMixin):
         ...
         xn,yn,zn
         """
-        coordinate_csv_path = path_pairs[0][0]#LR 45724
-        coordinate_csv_path2 = path_pairs[0][1]#HR 44355
+        coordinate_csv_path = path_pairs[0][0]#LR 41529
+        coordinate_csv_path2 = path_pairs[0][1]#HR 48994
         self._coordinate = pd.read_csv(os.path.join(self._root, coordinate_csv_path), names=("x","y","z")).values.tolist()
         self._coordinate2 = pd.read_csv(os.path.join(self._root, coordinate_csv_path2),
                                        names=("x", "y", "z")).values.tolist()
-        self._coordinate_add = random.sample(self._coordinate,len(self._coordinate)-len(self._coordinate2))
-        self._coordinate2 = self._coordinate2+self._coordinate_add
+        self._coordinate_add = random.sample(self._coordinate2,len(self._coordinate2)-len(self._coordinate))
+        self._coordinate = self._coordinate+self._coordinate_add
 
 
 

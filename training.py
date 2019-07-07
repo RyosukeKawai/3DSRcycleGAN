@@ -154,7 +154,7 @@ def main():
 
     # Write a log of evaluation statistics for each epoch
     trainer.extend(extensions.LogReport(trigger=display_interval))
-    trainer.extend(reconstruct_hr_img(gen,gen2, os.path.join(args.base, args.out), train_iter,train),trigger=evaluation_interval,priority=extension.PRIORITY_WRITER)
+    trainer.extend(reconstruct_hr_img(gen,gen2, os.path.join(args.base, args.out), train),trigger=evaluation_interval,priority=extension.PRIORITY_WRITER)
 
     # Print a progress bar to stdout
     trainer.extend(extensions.ProgressBar(update_interval=10))

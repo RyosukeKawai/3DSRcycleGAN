@@ -43,18 +43,15 @@ def main():
             os.makedirs(result_dir)
 
         num_bin=0.4
-        loop=1
+        loop=115
         base=1570
 
         print('----- Start -----')
         for i in range(loop):
             i = i + base
             # load data
-            # lr = pd.read_csv(args.root + '\\LR_{}.csv'.format(i), names=('mean', 'std'))
-            # hr = pd.read_csv(args.root + '\\HR_{}.csv'.format(i), names=('mean', 'std'))
-            lr = pd.read_csv("G:/data/train/denoising/undergraduate/train1/lr_std_mean.csv", names=('mean', 'std'))
-            hr = pd.read_csv("G:/data/train/denoising/undergraduate/train2/hr_std_mean.csv", names=('mean', 'std'))
-
+            lr = pd.read_csv(args.root + '\\LR_{}.csv'.format(i), names=('mean', 'std'))
+            hr = pd.read_csv(args.root + '\\HR_{}.csv'.format(i), names=('mean', 'std'))
 
             # join
             x3 = np.hstack((lr['mean'], hr['mean']))
@@ -79,12 +76,9 @@ def main():
             # calc histogram base KL divergence
             kld = KLD(hist_lr, hist_hr, (lr_ep + hr_ep) / 2.)
 
-            print(kld)
-
-
-            # # save info
-            # df = pd.DataFrame({'ep': [(lr_ep + hr_ep) / 2.],'num': [i], 'KLD': [kld]})
-            # df.to_csv('{}/results_after_debug.csv'.format(result_dir), index=False, encoding='utf-8', mode='a',header=None)
+            # save info
+            df = pd.DataFrame({'ep': [(lr_ep + hr_ep) / 2.],'num': [i], 'KLD': [kld]})
+            df.to_csv('{}/results_after_debug.csv'.format(result_dir), index=False, encoding='utf-8', mode='a',header=None)
         print('----- Finish -----')
 
 
