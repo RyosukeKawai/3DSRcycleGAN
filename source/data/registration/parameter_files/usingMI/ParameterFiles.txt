@@ -1,0 +1,76 @@
+// パラメータファイル
+// ステージ1
+// MIによって，位置合わせを行う
+// Appendixと同じように作成し，いくつか追加
+
+// ImageTypes
+(FixedInternalImagePixelType "float")
+(FixedImageDimension 3) //*
+(MovingInternalImagePixelType "float")
+(MovingImageDimension 3) //*
+(UseDirectionCosines "true")
+
+//Components
+(Registration "MultiResolutionRegistration")
+(FixedImagePyramid "FixedRecursiveImagePyramid")
+(MovingImagePyramid "MovingRecursiveImagePyramid")
+(Interpolator "BSplineInterpolator")
+(Metric "AdvancedMattesMutualInformation")
+(Optimizer "AdaptiveStochasticGradientDescent")
+(ResampleInterpolator "FinalBSplineInterpolator")
+(Resampler "DefaultResampler")
+(Transform "EulerTransform")
+
+// ********** Pyramid
+// Total number of resolutions
+(NumberOfResolutions 3)
+
+// ********** Transform
+(AutomaticTransformInitialization "true")// Initial alignment
+(AutomaticScalesEstimation "true")
+(HowToCombineTransforms "Compose")
+
+// ********** Optimizer
+// Maximum number of iterations in each resolution level:
+(MaximumNumberOfIterations 300 300 600)
+(AutomaticParameterEstimation "true")
+(UseAdaptiveStepSizes "true")
+(SP_alpha 0.6 ) //*
+(SP_A 50.0 )//*
+(SP_a 1000.0 )//*
+
+// ********** Metric
+//Number of grey level bins in each resolution level:
+(NumberOfHistogramBins 32)
+(FixedKernelBSplineOrder 1)
+(MovingKernelBSplineOrder 3)
+
+// ********** Several
+(WriteTransformParametersEachIteration "false")
+(WriteTransformParametersEachResolution "true")
+(WriteResultImageAfterEachResolution "false")
+(WritePyramidImagesAfterEachResolution "false")
+(ShowExactMetricValue "false")
+(ErodeMask "true") //いらない
+
+// ********** ImageSampler
+// Number of spatial samples used to compute the
+// mutual information in each resolution level:
+(ImageSampler "RandomCoordinate")
+(NumberOfSpatialSamples 2048)
+(NewSamplesEveryIteration "true")
+(MaximumNumberOfSamplingAttempts 35) //*
+
+// ********** Interpolator and Resampler
+//Order of B-Spline interpolation used in each resolution level:
+(BSplineInterpolationOrder 1)
+//Order of B-Spline interpolation used for applying the final deformation:
+(FinalBSplineInterpolationOrder 3)
+//Default pixel value for pixels that come from outside the picture:
+(DefaultPixelValue 0)
+
+// Post processing to write result image //
+(ResultImageFormat "mhd")
+(WriteResultImage "true")
+(CompressResultImage "false")
+(ResultImagePixelType "float")

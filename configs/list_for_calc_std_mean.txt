@@ -1,0 +1,3 @@
+train/denoising/undergraduate/train1/train1_total41529_interval28.csv train/denoising/undergraduate/train2/train2_total48994_interval28.csv
+train/denoising/undergraduate/train1/train1.mhd train/denoising/undergraduate/train2/train2.mhd
+input_adjast_result/for_KL/LR_1671.csv input_adjast_result/for_KL/HR_1671.csv

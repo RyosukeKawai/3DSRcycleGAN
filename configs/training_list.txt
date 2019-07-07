@@ -1,0 +1,2 @@
+train/denoising/train1/downsampling/Tri/x8/resize/train1_total45724_interval28.csv train/denoising/train2/resize/train2_total44355_interval28.csv
+train/denoising/train1/downsampling/Tri/x8/resize/train1.mhd train/denoising/train2/resize/train2.mhd
