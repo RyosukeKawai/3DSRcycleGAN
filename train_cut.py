@@ -43,7 +43,7 @@ def main():
 
     parser.add_argument('--base', '-B', default=os.path.dirname(os.path.abspath(__file__)),
                         help='base directory path of program files')
-    parser.add_argument('--out', '-o', default='results/',
+    parser.add_argument('--out', '-o', default='results/resize/',
                         help='Directory to output the result')
     parser.add_argument('--root', '-R', default=os.path.dirname(os.path.abspath(__file__)),
                         help='Root directory path of input image')
@@ -51,6 +51,8 @@ def main():
     args = parser.parse_args()
 
     file_name='train/denoising/MicroCT.mhd'
+    # file_name2 = 'calc_mask2.mhd'
+    file_name2 = 'train/calc_mask.mhd'
 
     #make output dir
     result_dir = os.path.join(args.base, args.out)
@@ -63,26 +65,41 @@ def main():
     train = sitk.GetArrayFromImage(sitktrain).astype("float32")#たしかこれ正規化済
     print("train.mhd load done")
 
-    #train cut
-    train1,train2 = np.split(train,[800],1)
-    print(train1.shape)
 
-    train21,train22 =np.split(train2,[410],1)
-    print(train2.shape)
+    print("mask.mhd load")
+    sitkmask = sitk.ReadImage(os.path.join(args.root,file_name2))
+    mask = sitk.GetArrayFromImage(sitkmask).astype("float32")#たしかこれ正規化済
+    print("mask.mhd load done")
+
+    #train cut
+    train1=train[:,0:1210,:]
+    mask=mask[:,0:1210,:]
+    print(train1.shape)
+    print(mask.shape)
+
+
+    # train21,train22 =np.split(train2,[1210],1)
+    # print(train2.shape)
+
+    # train1=train[:,0:1210,:]
+    # mask1 = mask[:, 0:1210, :]
 
     #save images
 
     print("images save")
     train1 = train1.flatten()
-    train21 = train21.flatten()
-
-    IO.write_mhd_and_raw_withoutSitk(train1, result_dir + '/train1.mhd',
-                                     ndims=3, size=[1240,800,3600],
+    train2 = mask.flatten()
+    # mask1 = mask1.flatten()
+    IO.write_mhd_and_raw_withoutSitk(train1, result_dir + '/MicroCT.mhd',
+                                     ndims=3, size=[1240,1210,3600],
                                      space=[0.07, 0.066, 0.07])
 
-    IO.write_mhd_and_raw_withoutSitk(train21, result_dir + '/train2.mhd',
-                                     ndims=3, size=[1240,410,3600],
-                                     space=[0.07, 0.066, 0.07])
+    # IO.write_mhd_and_raw_withoutSitk(train2, result_dir + '/mask2.mhd',
+    #                                  ndims=3, size=[1240,1299,1700],
+    #                                  space=[0.07, 0.066, 0.07])
+    IO.write_mhd_and_raw_withoutSitk(train2, result_dir + '/calc_mask.mhd',
+                                         ndims=3, size=[1240,1210,3600],
+                                         space=[0.07, 0.066, 0.07])
 
 
 if __name__ == '__main__':
