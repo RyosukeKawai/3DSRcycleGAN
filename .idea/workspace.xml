@@ -2,9 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c0762263-2acf-4410-a30d-29c633c7c707" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/configs/cutting_position.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/ioFunction_version_4_3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/3D-SRGAN.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/3D-SRGAN.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs/training.yml" beforeDir="false" afterPath="$PROJECT_DIR$/configs/training.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/train_cut.py" beforeDir="false" afterPath="$PROJECT_DIR$/train_cut.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/training_list.txt" beforeDir="false" afterPath="$PROJECT_DIR$/configs/training_list.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/val_list.txt" beforeDir="false" afterPath="$PROJECT_DIR$/configs/val_list.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluators.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/inference.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pretraining.py" beforeDir="false" afterPath="$PROJECT_DIR$/pretraining.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sample.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/bat/evaluations/evaluations.bat" beforeDir="false" afterPath="$PROJECT_DIR$/source/bat/evaluations/evaluations.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train_cut.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/updater.py" beforeDir="false" afterPath="$PROJECT_DIR$/updater.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/evaluations.py" beforeDir="false" afterPath="$PROJECT_DIR$/util/evaluations.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -15,51 +32,24 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/inference.py">
+        <entry file="file://$PROJECT_DIR$/training.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1019">
-              <caret line="206" selection-start-line="206" selection-end-line="207" selection-end-column="10" />
+            <state relative-caret-position="4212">
+              <caret line="161" column="5" selection-start-line="161" selection-start-column="5" selection-end-line="161" selection-end-column="5" />
               <folding>
-                <element signature="e#14#34#0" expanded="true" />
+                <element signature="e#98#126#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/model.py">
+        <entry file="file://$PROJECT_DIR$/updater.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="351">
-              <caret line="13" selection-start-line="13" selection-end-line="13" selection-end-column="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/training.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1593">
-              <caret line="64" column="38" lean-forward="true" selection-start-line="64" selection-start-column="38" selection-end-line="64" selection-end-column="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/train_cut.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="533">
-              <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pretraining.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2349">
-              <caret line="87" column="55" lean-forward="true" selection-start-line="87" selection-start-column="55" selection-end-line="87" selection-end-column="55" />
+            <state relative-caret-position="2268">
+              <caret line="91" selection-start-line="91" selection-end-line="91" />
               <folding>
-                <element signature="e#99#127#0" expanded="true" />
+                <element signature="e#107#133#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -68,32 +58,65 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dataset.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="783">
-              <caret line="29" column="37" lean-forward="true" selection-start-line="29" selection-start-column="37" selection-end-line="29" selection-end-column="37" />
+            <state relative-caret-position="108">
+              <caret line="4" column="21" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/inference.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="27">
+              <caret line="1" selection-start-line="1" selection-end-line="1" />
               <folding>
-                <element signature="e#119#150#0" expanded="true" />
+                <element signature="e#14#34#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/configs/training.yml">
+        <entry file="file://$PROJECT_DIR$/evaluators.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+            <state>
+              <caret column="14" selection-start-column="14" selection-end-column="14" />
+              <folding>
+                <element signature="e#15#43#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/updater.py">
+        <entry file="file://$PROJECT_DIR$/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2376">
-              <caret line="95" selection-start-line="95" selection-end-line="95" />
+            <state relative-caret-position="4698">
+              <caret line="183" column="29" selection-start-line="183" selection-start-column="29" selection-end-line="183" selection-end-column="29" />
               <folding>
-                <element signature="e#107#133#0" expanded="true" />
+                <element signature="e#109#135#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pretraining.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="27">
+              <caret line="69" column="18" selection-start-line="69" selection-start-column="18" selection-end-line="69" selection-end-column="18" />
+              <folding>
+                <element signature="e#99#127#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/util/evaluations.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="54">
+              <caret line="2" column="17" lean-forward="true" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
             </state>
           </provider>
         </entry>
@@ -112,11 +135,16 @@
     <findStrings>
       <find>-m</find>
       <find>model</find>
-      <find>get</find>
       <find>korako</find>
       <find>result</find>
       <find>edge</find>
       <find>rec</find>
+      <find>args</find>
+      <find>np.atleast</find>
+      <find>axis</find>
+      <find>IO</find>
+      <find>iterato</find>
+      <find>get</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -136,27 +164,52 @@
         <option value="$PROJECT_DIR$/pca_saeki.py" />
         <option value="$PROJECT_DIR$/docking.py" />
         <option value="$PROJECT_DIR$/PseudoLR.py" />
-        <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/test2.py" />
-        <option value="$PROJECT_DIR$/pretraining.py" />
-        <option value="$PROJECT_DIR$/training.py" />
         <option value="$PROJECT_DIR$/calc_std.py" />
         <option value="$PROJECT_DIR$/sample.py" />
-        <option value="$PROJECT_DIR$/dataset.py" />
-        <option value="$PROJECT_DIR$/model.py" />
-        <option value="$PROJECT_DIR$/evaluators.py" />
-        <option value="$PROJECT_DIR$/updater.py" />
-        <option value="$PROJECT_DIR$/inference.py" />
-        <option value="$PROJECT_DIR$/configs/training.yml" />
+        <option value="$PROJECT_DIR$/for-jamit2.py" />
+        <option value="$PROJECT_DIR$/configs/Scatter_plot.yml" />
+        <option value="$PROJECT_DIR$/configs/cutting_position.yml" />
+        <option value="$PROJECT_DIR$/input_adjast/input_adjast.py" />
+        <option value="$PROJECT_DIR$/input_adjast/train_cut.py" />
+        <option value="$PROJECT_DIR$/for_jamit.py" />
+        <option value="$PROJECT_DIR$/util/evaluations.py" />
+        <option value="$PROJECT_DIR$/input_adjast/Scatter_plot.py" />
+        <option value="$PROJECT_DIR$/configs/list_for_calc_std_mean.txt" />
+        <option value="$PROJECT_DIR$/calc_patch_std_mean.py" />
+        <option value="$PROJECT_DIR$/utils/transform.py" />
+        <option value="$PROJECT_DIR$/subctract.py" />
+        <option value="$PROJECT_DIR$/for_KL_debug.py" />
+        <option value="$PROJECT_DIR$/for_KL.py" />
+        <option value="$PROJECT_DIR$/calc_covariance.py" />
         <option value="$PROJECT_DIR$/train_cut.py" />
+        <option value="$PROJECT_DIR$/Scatter_plot.py" />
+        <option value="$PROJECT_DIR$/smoothing.py" />
+        <option value="$PROJECT_DIR$/substitute_model/smoothing.py" />
+        <option value="$PROJECT_DIR$/trispline_test.py" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/../TriCubic/x64/Release/test.py" />
+        <option value="$PROJECT_DIR$/tri_test.py" />
+        <option value="$PROJECT_DIR$/configs/training_list.txt" />
+        <option value="$PROJECT_DIR$/configs/val_list.txt" />
+        <option value="$PROJECT_DIR$/inference.py" />
+        <option value="$PROJECT_DIR$/source/bat/evaluations/evaluations.bat" />
+        <option value="$PROJECT_DIR$/utils/evaluations.py" />
+        <option value="$PROJECT_DIR$/dataset.py" />
+        <option value="$PROJECT_DIR$/evaluators.py" />
+        <option value="$PROJECT_DIR$/model.py" />
+        <option value="$PROJECT_DIR$/configs/training.yml" />
+        <option value="$PROJECT_DIR$/training.py" />
+        <option value="$PROJECT_DIR$/updater.py" />
+        <option value="$PROJECT_DIR$/pretraining.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="602" />
-    <option name="y" value="177" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="2576" />
+    <option name="height" value="1416" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -168,8 +221,13 @@
         <subPane>
           <expand>
             <path>
-              <item name="Unpair_SR" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Unpair_SR" type="462c0819:PsiDirectoryNode" />
+              <item name="3DSRcycleGAN" type="b2602c69:ProjectViewProjectNode" />
+              <item name="3DSRcycleGAN" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="3DSRcycleGAN" type="b2602c69:ProjectViewProjectNode" />
+              <item name="3DSRcycleGAN" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -182,11 +240,19 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
     <property name="ignore_missing_gitignore" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../3D-SRGAN-master" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="G:\experiment\3DSRcycleGAN-weight_lighted\substitute_model" />
+      <recent name="G:\experiment\Unpair_SR" />
+      <recent name="G:\experiment\Unpair_SR\input_adjast" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="G:\experiment\Unpair_SR\utils" />
+      <recent name="G:\experiment\Unpair_SR" />
+      <recent name="G:\experiment\Unpair_SR\input_adjast" />
       <recent name="D:\ryosuke\experiment\3D-CycleGAN_SR" />
     </key>
   </component>
@@ -339,10 +405,29 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="602" y="177" width="1936" height="1056" extended-state="0" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16471216" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.07551669" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32969603" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.36165237" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3991323" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.32969603" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="GfmBrowser" order="3" />
+    </layout>
+    <layout-to-restore>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13354531" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -360,205 +445,304 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="GfmBrowser" order="3" />
-    </layout>
-    <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17697228" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.329718" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="GfmBrowser" order="3" />
     </layout-to-restore>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/util/layers/difference_filter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="63" column="8" selection-start-line="63" selection-start-column="8" selection-end-line="63" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/analyze_patches_using_pca/model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1921" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/source/analyze_patches_using_pca/output_inferred_patches.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1502">
-          <caret line="1" lean-forward="true" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/functions/max_sv.py">
+    <entry file="file://$PROJECT_DIR$/utils/ioFunction_version_4_3.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/analyze_patches_using_pca/calc_dist_between_distributions.py">
+    <entry file="file://$PROJECT_DIR$/calc_patch_std_mean.py" />
+    <entry file="file://$PROJECT_DIR$/source/CVAE/projection_to_latent_space.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-611" />
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Anaconda3/envs/3D-SRGAN/Lib/site-packages/numpy/core/fromnumeric.py" />
-    <entry file="file://$USER_HOME$/Anaconda3/envs/3D-SRGAN/Lib/site-packages/chainer/training/trainer.py" />
-    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
-    <entry file="file://$USER_HOME$/Anaconda3/envs/3D-SRGAN/Lib/site-packages/matplotlib/pyplot.py" />
-    <entry file="file://$PROJECT_DIR$/source/analyze_patches_using_pca/apply_pca_to_patches.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="590">
-          <caret line="87" column="65" lean-forward="true" selection-start-line="87" selection-start-column="65" selection-end-line="87" selection-end-column="65" />
+        <state relative-caret-position="243">
+          <caret line="9" column="17" lean-forward="true" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sample.ipynb" />
-    <entry file="file://$PROJECT_DIR$/apply_pca_to_patches.py" />
-    <entry file="file://$PROJECT_DIR$/k-means.py" />
-    <entry file="file://$USER_HOME$/Anaconda3/envs/3D-SRGAN/Lib/site-packages/sklearn/utils/validation.py" />
-    <entry file="file://$PROJECT_DIR$/PCA_sklearn.py" />
-    <entry file="file://$PROJECT_DIR$/pca_saeki.py" />
-    <entry file="file://$USER_HOME$/.PyCharmCE2018.2/system/python_stubs/484536149/builtins.py" />
-    <entry file="file://$PROJECT_DIR$/results/pretraining/model.py" />
-    <entry file="file://$USER_HOME$/Anaconda3/envs/3D-SRGAN/Lib/site-packages/numpy/lib/npyio.py" />
-    <entry file="file://$USER_HOME$/Anaconda3/envs/3D-SRGAN/Lib/site-packages/sklearn/preprocessing/data.py" />
-    <entry file="file://$USER_HOME$/Anaconda3/envs/3D-SRGAN/Lib/random.py" />
-    <entry file="file://$PROJECT_DIR$/PseudoLR.py" />
-    <entry file="file://$PROJECT_DIR$/docking.py" />
-    <entry file="file://$PROJECT_DIR$/util/ioFunction_version_4_3.py">
+    <entry file="file://$PROJECT_DIR$/utils/rotate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="23" column="7" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/ioFunctions.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/chainer/training/trainer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4239">
+          <caret line="169" column="13" selection-start-line="169" selection-start-column="13" selection-end-line="169" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/chainer/iterators/multiprocess_iterator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="563">
+          <caret line="133" column="20" selection-start-line="133" selection-start-column="20" selection-end-line="133" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/SimpleITK/SimpleITK.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="27">
-          <caret line="86" column="4" selection-start-line="86" selection-start-column="4" selection-end-line="86" selection-end-column="4" />
+          <caret line="3404" column="4" selection-start-line="3404" selection-start-column="4" selection-end-line="3404" selection-end-column="4" />
         </state>
       </provider>
     </entry>
-    <entry file="file://G:/3D-SRGAN/dataset.py" />
-    <entry file="file://G:/3D-CycleGAN/source/data/README.md" />
-    <entry file="file://$USER_HOME$/Anaconda3/envs/3D-SRGAN/Lib/site-packages/chainer/links/connection/deconvolution_nd.py" />
-    <entry file="file://$PROJECT_DIR$/source/analyze_patches_using_pca/extract_patch.py">
+    <entry file="file://$PROJECT_DIR$/subctract.py" />
+    <entry file="file://$PROJECT_DIR$/utils/transform.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1215">
-          <caret line="49" column="41" selection-start-line="49" selection-start-column="41" selection-end-line="49" selection-end-column="41" />
+        <state relative-caret-position="918">
+          <caret line="35" column="7" selection-start-line="35" selection-start-column="7" selection-end-line="35" selection-end-column="7" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Anaconda3/envs/3D-SRGAN/Lib/site-packages/chainer/variable.py" />
-    <entry file="file://$USER_HOME$/.PyCharmCE2018.2/system/python_stubs/484536149/numpy/core/multiarray.py" />
-    <entry file="file://$PROJECT_DIR$/test.py" />
-    <entry file="file://$PROJECT_DIR$/test2.py" />
-    <entry file="file://$PROJECT_DIR$/test.txt" />
-    <entry file="file://$PROJECT_DIR$/calc_std.py" />
-    <entry file="file://$USER_HOME$/Anaconda3/envs/py35/Lib/site-packages/SimpleITK/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$USER_HOME$/Anaconda3/envs/py35/Lib/site-packages/SimpleITK/SimpleITK.py">
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/pandas/io/parsers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4887">
-          <caret line="3368" column="61" lean-forward="true" selection-start-line="3368" selection-start-column="61" selection-end-line="3368" selection-end-column="61" />
+        <state relative-caret-position="2606">
+          <caret line="709" column="15" selection-start-line="709" selection-start-column="15" selection-end-line="709" selection-end-column="15" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Anaconda3/envs/py35/Lib/site-packages/numpy/lib/shape_base.py">
+    <entry file="file://$PROJECT_DIR$/train_cut.py" />
+    <entry file="file://$PROJECT_DIR$/calc_covariance.py" />
+    <entry file="file://$PROJECT_DIR$/for_KL.py" />
+    <entry file="file://$PROJECT_DIR$/Scatter_plot.py" />
+    <entry file="file://$PROJECT_DIR$/for_KL_debug.py" />
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/chainer/training/updaters/standard_updater.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-60">
-          <caret line="485" column="4" selection-start-line="485" selection-start-column="4" selection-end-line="485" selection-end-column="4" />
+        <state relative-caret-position="2079">
+          <caret line="81" column="13" selection-start-line="81" selection-start-column="13" selection-end-line="81" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file:////tera/user/ryosuke/Ryosuke KAWAI/git/3DcycleGAN_cycle/inference.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sample.py">
+    <entry file="file://$PROJECT_DIR$/substitute_model/smoothing.py" />
+    <entry file="file://$USER_HOME$/Downloads/ARBInterp-1.5/ARBTools/ARBInterp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="10" column="18" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/evaluators.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        <state>
           <folding>
-            <element signature="e#15#43#0" expanded="true" />
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/eqtools3/tests/demo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="13" column="7" lean-forward="true" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/eqtools3/eqtools3/trispline.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/eqtools3/tests/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="965">
+          <caret line="67" column="33" lean-forward="true" selection-start-line="67" selection-start-column="33" selection-end-line="67" selection-end-column="33" />
+          <folding>
+            <element signature="e#980#995#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trispline_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="371">
+          <caret line="21" column="14" lean-forward="true" selection-start-line="21" selection-start-column="14" selection-end-line="21" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/eqtools/trispline.py" />
+    <entry file="file://$PROJECT_DIR$/test.py" />
+    <entry file="file://$USER_HOME$/source/repos/pybindtest/x64/Release/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="15" column="27" lean-forward="true" selection-start-line="15" selection-start-column="27" selection-end-line="15" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../TriCubic/x64/Release/test.py" />
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/chainer/functions/pooling/unpooling_nd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4239">
+          <caret line="165" column="4" selection-start-line="165" selection-start-column="4" selection-end-line="165" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/chainer/functions/pooling/average_pooling_nd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7020">
+          <caret line="272" column="49" selection-start-line="272" selection-start-column="49" selection-end-line="272" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/eqtools3/trispline.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="75" column="8" selection-start-line="75" selection-start-column="8" selection-end-line="75" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configs/Scatter_plot.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../Unpair_SR/inference.py" />
+    <entry file="file://$PROJECT_DIR$/utils/evaluations.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/skimage/measure/simple_metrics.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="821">
+          <caret line="99" column="4" selection-start-line="99" selection-start-column="4" selection-end-line="99" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/chainer/links/connection/convolution_nd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3004">
+          <caret line="193" column="8" selection-start-line="193" selection-start-column="8" selection-end-line="193" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/bat/evaluations/evaluations.bat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="567">
+          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/configs/training.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+        <state relative-caret-position="567">
+          <caret line="21" column="12" selection-start-line="21" selection-start-column="12" selection-end-line="21" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configs/val_list.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configs/training_list.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="1" column="37" selection-start-line="1" selection-start-column="37" selection-end-line="1" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sample.py" />
+    <entry file="file://$PROJECT_DIR$/training.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4212">
+          <caret line="161" column="5" selection-start-line="161" selection-start-column="5" selection-end-line="161" selection-end-column="5" />
+          <folding>
+            <element signature="e#98#126#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/updater.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2376">
-          <caret line="95" selection-start-line="95" selection-end-line="95" />
+        <state relative-caret-position="2268">
+          <caret line="91" selection-start-line="91" selection-end-line="91" />
           <folding>
             <element signature="e#107#133#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/train_cut.py">
+    <entry file="file://$PROJECT_DIR$/tri_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="533">
-          <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pretraining.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2349">
-          <caret line="87" column="55" lean-forward="true" selection-start-line="87" selection-start-column="55" selection-end-line="87" selection-end-column="55" />
+        <state relative-caret-position="1242">
+          <caret line="54" column="39" selection-start-line="54" selection-start-column="39" selection-end-line="54" selection-end-column="39" />
           <folding>
-            <element signature="e#99#127#0" expanded="true" />
+            <element signature="e#319#339#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dataset.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="783">
-          <caret line="29" column="37" lean-forward="true" selection-start-line="29" selection-start-column="37" selection-end-line="29" selection-end-column="37" />
-          <folding>
-            <element signature="e#119#150#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="108">
+          <caret line="4" column="21" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="21" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/inference.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1019">
-          <caret line="206" selection-start-line="206" selection-end-line="207" selection-end-column="10" />
+        <state relative-caret-position="27">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
           <folding>
             <element signature="e#14#34#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/model.py">
+    <entry file="file://$PROJECT_DIR$/evaluators.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="13" selection-start-line="13" selection-end-line="13" selection-end-column="29" />
+        <state>
+          <caret column="14" selection-start-column="14" selection-end-column="14" />
+          <folding>
+            <element signature="e#15#43#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/training.py">
+    <entry file="file://$PROJECT_DIR$/model.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1593">
-          <caret line="64" column="38" lean-forward="true" selection-start-line="64" selection-start-column="38" selection-end-line="64" selection-end-column="38" />
+        <state relative-caret-position="4698">
+          <caret line="183" column="29" selection-start-line="183" selection-start-column="29" selection-end-line="183" selection-end-column="29" />
+          <folding>
+            <element signature="e#109#135#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tool/for_KL_debug.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="6" lean-forward="true" selection-start-line="6" selection-end-line="6" />
+          <folding>
+            <element signature="e#68#87#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pretraining.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27">
+          <caret line="69" column="18" selection-start-line="69" selection-start-column="18" selection-end-line="69" selection-end-column="18" />
+          <folding>
+            <element signature="e#99#127#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/evaluations.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="2" column="17" lean-forward="true" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
         </state>
       </provider>
     </entry>

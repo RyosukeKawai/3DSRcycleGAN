@@ -15,7 +15,7 @@ from evaluators import reconstruct_hr_img
 
 sys.path.append(os.path.dirname(__file__))
 
-from model import Generator_SR
+from model import Generator
 from updater import preUpdater
 from dataset import CycleganDataset
 import util.yaml_utils  as yaml_utils
@@ -64,8 +64,8 @@ def main():
     train_iter = chainer.iterators.SerialIterator(train, batch_size=config.batchsize)
 
     print('----- Set up model ------')
-    gen = Generator_SR()
-    gen2 = Generator_SR()
+    gen = Generator()
+    gen2 = Generator()
 
     if args.model:
         chainer.serializers.load_npz(args.model, gen)

@@ -1,2 +1,2 @@
-train/denoising/32/MicroCT_total93605_interval28.csv
-train/upsampling/x8/from-denoising/MicroCT.mhd train/denoising/MicroCT.mhd
+train/64/64-32/LR/PLR_coordinate.csv train/64/64-32/HR/train2_total25100_interval32.csv
+train/64/64-32/LR/downsampling/train1.mhd train/64/64-32/HR/resize/train2.mhd

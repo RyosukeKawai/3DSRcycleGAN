@@ -18,15 +18,11 @@ set SUM_LOG_PY=%A%summarize_results.py
 
 ::======================================================
 :: Variables that you should change
-<<<<<<< HEAD
-set LOAD_MODEL_DIR=%BASE_PATH%results\pretraining0006
-set DATA_DIR=F:\experiment_data\96
-set OUTPUT_DIR=results\inference0009
+set LOAD_MODEL_DIR=%BASE_PATH%results\training
+set DATA_DIR=G:\data
+set OUTPUT_DIR=results\inference\PLR_HR_SN
+set FILENAME=val_fn
 =======
-set LOAD_MODEL_DIR=%BASE_PATH%results\training0010
-set DATA_DIR=F:\experiment_data\data
-set OUTPUT_DIR=results\inference0017\test
->>>>>>> MI-exp
 ::======================================================
 set LOG_DIR=%BASE_PATH%%OUTPUT_DIR%
 
@@ -38,31 +34,9 @@ echo DATA_DIR: %DATA_DIR% >> %LOG_DIR%/README.txt
 echo OUTPUT_DIR: %OUTPUT_DIR% >> %LOG_DIR%/README.txt
 
 :no_make_file
-<<<<<<< HEAD
-call :run	1000
-call :run	5000
-call :run	10000
-call :run	15000
-call :run	20000
-call :run	25000
-call :run	30000
-call :run	35000
-call :run	40000
-call :run	45000
-call :run	50000
-call :run	55000
-call :run	60000
-call :run	65000
-call :run	70000
-call :run	75000
-call :run	80000
-call :run	85000
-call :run	90000
-call :run	95000
-call :run	100000
+for /l %%i in (10000,1000,100000) do call :run	%%i
 =======
-call :run	81000
->>>>>>> MI-exp
+
 
 PAUSE
 call PYTHON SUM_LOG_PY -R %LOG_DIR%

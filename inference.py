@@ -5,26 +5,12 @@ import numpy as np
 import pandas as pd
 import SimpleITK as sitk
 import chainer
-import chainer.functions as F
 
-import util.ioFunction_version_4_3 as IO
-import util.yaml_utils  as yaml_utils
-from util.evaluations import calc_mse, calc_psnr, calc_score_on_fft_domain, calc_ssim, calc_zncc
-from model import Generator_SR
+import utils.ioFunctions as IO
+import utils.yaml_utils  as yaml_utils
+from utils.evaluations import calc_mse, calc_psnr, calc_score_on_fft_domain, calc_ssim, calc_zncc
+from model import Generator
 
-
-def cropping(input,ref):
-    ref_map=np.zeros((ref,ref,ref))
-    rZ, rY, rX =ref_map.shape
-    _, _, iZ, iY, iX = input.shape
-    edgeZ, edgeY, edgeX = (iZ - rZ)//2, (iY - rY)//2, (iX - rX)//2
-    edgeZZ, edgeYY, edgeXX = iZ-edgeZ, iY-edgeY, iX-edgeX
-
-    _, X, _ = F.split_axis(input, (edgeX, edgeXX), axis=4)
-    _, X, _ = F.split_axis(X, (edgeY, edgeYY), axis=3)
-    _, X, _ = F.split_axis(X, (edgeZ, edgeZZ), axis=2)
-
-    return X
 
 def main():
     parser = argparse.ArgumentParser()
@@ -34,49 +20,39 @@ def main():
                         help='base directory path of program files')
     parser.add_argument('--config_path', type=str, default='configs/training.yml',
                         help='path to config file')
-    parser.add_argument('--out', '-o', default= 'results/inference/',
+    parser.add_argument('--out', '-o', default= 'results/inference',
                         help='Directory to output the result')
 
     parser.add_argument('--model', '-m', default='',
                         help='Load model data(snapshot)')
-
-    parser.add_argument('--model2', '-m2', default='',
-                        help='Load model data(snapshot)')
-
 
     parser.add_argument('--root', '-R', default=os.path.dirname(os.path.abspath(__file__)),
                         help='Root directory path of input image')
 
     parser.add_argument('--save_flag', type=bool, default=False,
                         help='Decision flag whether to save criteria image')
-    parser.add_argument('--filename_arg', type=str, default='test_fn',
-                        help='Which do you want to use val_fn or test_fn')
+    parser.add_argument('--filename_arg', type=str, default='val_fn',
+                        help='Which do you want to use val_list or test_list')
 
     args = parser.parse_args()
 
     config = yaml_utils.Config(yaml.load(open(os.path.join(args.base, args.config_path))))
     print('GPU: {}'.format(args.gpu))
-    LR_PATCH_SIDE, HR_PATCH_SIDE = config.patch['patchside'], config.patch['patchside']
+    UPSAMPLING_RATE = config.patch['upsampling_rate']
+    LR_PATCH_SIDE, HR_PATCH_SIDE = config.patch['lr_patchside'], config.patch['patchside']
     LR_PATCH_SIZE, HR_PATCH_SIZE = int(LR_PATCH_SIDE**3), int(HR_PATCH_SIDE**3)
     LR_MIN, LR_MAX = config.patch['lrmin'], config.patch['lrmax']
     print('HR PATCH SIZE: {}'.format(HR_PATCH_SIZE))
     print('LR PATCH SIZE: {}'.format(LR_PATCH_SIZE))
     print('')
 
-    gen = Generator_SR()
-
-
+    gen = Generator()
     chainer.serializers.load_npz(args.model, gen)
-
-
     if args.gpu >= 0:
         chainer.backends.cuda.set_max_workspace_size(1024 * 1024 * 1024) # 1GB
         chainer.backends.cuda.get_device_from_id(args.gpu).use()
         gen.to_gpu()
-
-
     xp = gen.xp
-
 
     def create_result_dir(base_dir, output_dir, config_path, config):
         """https://github.com/pfnet-research/sngan_projection/blob/master/train.py"""
@@ -110,63 +86,66 @@ def main():
 
     print(' Inference start')
     for i in path_pairs:
-        print('    Tri from: {}'.format(i[0]))
-        print('    Org from: {}'.format(i[1]))
+        print('    LR from: {}'.format(i[0]))
+        print('    HR from: {}'.format(i[1]))
         #Read data and reshape
-        sitkTri = sitk.ReadImage(os.path.join(args.root, i[0]))
-        tri = sitk.GetArrayFromImage(sitkTri).astype("float32")
-        tri = (tri-LR_MIN)/ (LR_MAX-LR_MIN)
+        sitkLr = sitk.ReadImage(os.path.join(args.root, i[0]))
+        lr = sitk.GetArrayFromImage(sitkLr).astype("float32")
+        sitkGt = sitk.ReadImage(os.path.join(args.root, i[1]))
+        gt = sitk.GetArrayFromImage(sitkGt).astype("float")
+        lr = (lr-LR_MIN)/ (LR_MAX-LR_MIN)
+
         # Calculate maximum of number of patch at each side
-        ze, ye, xe = tri.shape
+        ze, ye, xe = gt.shape
         xm = int(math.ceil((float(xe)/float(config.patch['interval']))))
         ym = int(math.ceil((float(ye)/float(config.patch['interval']))))
         zm = int(math.ceil((float(ze)/float(config.patch['interval']))))
-        edge = 16.
 
+        margin = ((0, LR_PATCH_SIDE),
+                  (0, LR_PATCH_SIDE),
+                  (0, LR_PATCH_SIDE))
+        lr = np.pad(lr, margin, 'edge')
+        lr = chainer.Variable(xp.array(lr[np.newaxis, np.newaxis, :], dtype=xp.float32))
 
-        margin = ((8, config.patch['patchside']),
-                  (8, config.patch['patchside']),
-                  (8, config.patch['patchside']))
-        tri = np.pad(tri, margin, 'edge')
-        tri = chainer.Variable(xp.array(tri[np.newaxis, np.newaxis, :], dtype=xp.float32))
-
-        inferred_map = np.zeros((ze+config.patch['patchside'],ye+config.patch['patchside'], xe+config.patch['patchside']))
-
+        inferred_map = np.zeros((ze+HR_PATCH_SIDE,ye+HR_PATCH_SIDE, xe+HR_PATCH_SIDE))
         overlap_count = np.zeros(inferred_map.shape)
 
         # Patch loop
         print('     #Patches {}'.format(xm*ym*zm))
-
         for s in range(xm*ym*zm):
             xi = int(s%xm)*config.patch['interval']
             yi = int((s%(ym*xm))/xm)*config.patch['interval']
             zi = int(s/(ym*xm))*config.patch['interval']
 
+            lr_x = int(xi/UPSAMPLING_RATE+0.5)
+            lr_y = int(yi/UPSAMPLING_RATE+0.5)
+            lr_z = int(zi/UPSAMPLING_RATE+0.5)
+            x_s, x_e = lr_x, lr_x + LR_PATCH_SIDE
+            y_s, y_e = lr_y, lr_y + LR_PATCH_SIDE
+            z_s, z_e = lr_z, lr_z + LR_PATCH_SIDE
             # Extract patch from original image
-            patch = tri[:,:,zi:zi+config.patch['patchside']+edge,yi:yi+config.patch['patchside']+edge,xi:xi+config.patch['patchside']+edge]
+            patch = lr[:,:,z_s:z_e,y_s:y_e,x_s:x_e]
             with chainer.using_config('train', False), chainer.using_config('enable_backprop', False):
                 inferred_patch = gen(patch)
-            # Generate probability map
-            inferred_patch = inferred_patch.data # T48*48*48
-            inferred_patch = cropping(inferred_patch,32)#32*32*32
 
+            # Generate probability map
+            inferred_patch = inferred_patch.data
             if args.gpu >= 0:
                 inferred_patch = chainer.backends.cuda.to_cpu(inferred_patch)
 
-            inferred_map[zi:zi+config.patch['patchside'],yi:yi+config.patch['patchside'],xi:xi+config.patch['patchside']] += np.squeeze(inferred_patch)
-            overlap_count[zi:zi+config.patch['patchside'],yi:yi+config.patch['patchside'],xi:xi+config.patch['patchside']] += 1
+            inferred_map[zi:zi+HR_PATCH_SIDE,yi:yi+HR_PATCH_SIDE,xi:xi+HR_PATCH_SIDE] += np.squeeze(inferred_patch)
+            overlap_count[zi:zi+HR_PATCH_SIDE,yi:yi+HR_PATCH_SIDE,xi:xi+HR_PATCH_SIDE] += 1
+
         print('     Save image')
         inferred_map = inferred_map[:ze,:ye,:xe]
         overlap_count = overlap_count[:ze,:ye,:xe]
         inferred_map /= overlap_count
         inferred_map = ((inferred_map+1)/2*255)
 
-
         # Save prediction map
         inferenceImage = sitk.GetImageFromArray(inferred_map)
-        inferenceImage.SetSpacing(sitkTri.GetSpacing())
-        inferenceImage.SetOrigin(sitkTri.GetOrigin())
-
+        inferenceImage.SetSpacing(sitkGt.GetSpacing())
+        inferenceImage.SetOrigin(sitkGt.GetOrigin())
         result_dir = os.path.join(args.base, args.out)
         if not os.path.exists(result_dir):
             os.makedirs(result_dir)
@@ -174,8 +153,6 @@ def main():
         sitk.WriteImage(inferenceImage, '{}/{}.mhd'.format(result_dir, fn))
 
         print('     Start evaluations ')
-        sitkGt = sitk.ReadImage(os.path.join(args.root, i[1]))
-        gt = sitk.GetArrayFromImage(sitkGt).astype("float")
         start = time.time()
         mse_const = calc_mse(gt, inferred_map)
         psnr_const = calc_psnr(gt, inferred_map)
@@ -191,10 +168,10 @@ def main():
                     print("Dimension Error")
                     quit()
 
-            sitkImg = sitk.GetImageFromArray(arr)
-            sitkImg.SetSpacing(spacing)
-            sitkImg.SetOrigin(origin)
-            return sitkImg
+                sitkImg = sitk.GetImageFromArray(arr)
+                sitkImg.SetSpacing(spacing)
+                sitkImg.SetOrigin(origin)
+                return sitkImg
 
             diffSpeImage = array2sitk(diff_spe, [1,1,1], [0,0,0])
             diffAngImage = array2sitk(diff_ang, [1,1,1], [0,0,0])

@@ -8,14 +8,15 @@ import numpy as np
 import argparse, yaml, shutil
 import chainer
 from chainer import training
-from chainer.training import extensions
+from chainer.datasets import TransformDataset
 
 sys.path.append(os.path.dirname(__file__))
 
-from model import Generator_SR, Discriminator
+from model import Generator, Discriminator,Generator2
 from updater import CinCGANUpdater
 from dataset import CycleganDataset
-import util.yaml_utils  as yaml_utils
+import utils.yaml_utils  as yaml_utils
+from utils.transform import transform
 from evaluators import reconstruct_hr_img
 from chainer.training import extension
 from chainer.training import extensions
@@ -65,28 +66,30 @@ def main():
     train = CycleganDataset(args.root,
                             os.path.join(args.base, config.dataset['training_fn']),
                             config.patch['patchside'],
-                            [config.patch['lrmin'], config.patch['lrmax']],
-                            augmentation=True)
-    train_iter = chainer.iterators.MultiprocessIterator(train, batch_size=config.batchsize,n_processes=config.batchsize)
+                            [config.patch['lrmin'], config.patch['lrmax']],)
+    transformed_train=TransformDataset(train,transform)
+    train_iter = chainer.iterators.MultiprocessIterator(transformed_train, batch_size=config.batchsize,n_processes=config.batchsize)
 
     print('----- Set up model ------')
-    gen = Generator_SR()
-    gen2 = Generator_SR()
+    gen = Generator()
+    #gen2 = Generator2()
     disY = Discriminator()
-    chainer.serializers.load_npz(args.model, gen)
-    chainer.serializers.load_npz(args.model2, gen2)
+    #disX = Discriminator()
+    # chainer.serializers.load_npz(args.model, gen)
+    # chainer.serializers.load_npz(args.model2, gen2)
 
 
     if args.gpu >= 0:
         chainer.backends.cuda.set_max_workspace_size(1024 * 1024 * 1024) # 1GB
         chainer.backends.cuda.get_device_from_id(args.gpu).use()
         gen.to_gpu()
-        gen2.to_gpu()
+        #gen2.to_gpu()
         disY.to_gpu()
+        #disX.to_gpu()
 
 
     print('----- Make optimizer -----')
-    def make_optimizer(model, alpha=0.00001, beta1=0.9, beta2=0.999):
+    def make_optimizer(model, alpha=0.0001, beta1=0.9, beta2=0.999):
         optimizer = chainer.optimizers.Adam(alpha=alpha, beta1=beta1, beta2=beta2)
         optimizer.setup(model)
         return optimizer
@@ -95,21 +98,26 @@ def main():
                             beta1=config.adam['beta1'],
                             beta2=config.adam['beta2'])
 
-    gen2_opt = make_optimizer(model = gen2,
-                            alpha=config.adam['alpha'],
-                            beta1=config.adam['beta1'],
-                            beta2=config.adam['beta2'])
+    # gen2_opt = make_optimizer(model = gen2,
+    #                         alpha=config.adam['alpha'],
+    #                         beta1=config.adam['beta1'],
+    #                         beta2=config.adam['beta2'])
 
     disY_opt = make_optimizer(model = disY,
                             alpha=config.adam['alpha'],
                             beta1=config.adam['beta1'],
                             beta2=config.adam['beta2'])
 
+    # disX_opt = make_optimizer(model = disX,
+    #                         alpha=config.adam['alpha'],
+    #                         beta1=config.adam['beta1'],
+    #                         beta2=config.adam['beta2'])
+
     print('----- Make updater -----')
     updater = CinCGANUpdater(
-        models = (gen, gen2,disY),
+        models = (gen,disY),
         iterator = train_iter,
-        optimizer={'gen': gen_opt, 'gen2': gen2_opt, 'disY': disY_opt},
+        optimizer={'gen': gen_opt,'disY': disY_opt},
         device=args.gpu
         )
 
@@ -149,12 +157,13 @@ def main():
     evaluation_interval = (config.evaluation_interval, 'iteration')
     trainer.extend(extensions.snapshot(filename='snapshot_iter_{.updater.iteration}.npz'),trigger=snapshot_interval)
     trainer.extend(extensions.snapshot_object(gen, filename='gen_iter_{.updater.iteration}.npz'), trigger=snapshot_interval)
-    trainer.extend(extensions.snapshot_object(gen2, filename='gen2_iter_{.updater.iteration}.npz'),trigger=snapshot_interval)
+    #trainer.extend(extensions.snapshot_object(gen2, filename='gen2_iter_{.updater.iteration}.npz'),trigger=snapshot_interval)
     trainer.extend(extensions.snapshot_object(disY, filename='disY_iter_{.updater.iteration}.npz'), trigger=snapshot_interval)
+    #trainer.extend(extensions.snapshot_object(disX, filename='disX_iter_{.updater.iteration}.npz'), trigger=snapshot_interval)
 
     # Write a log of evaluation statistics for each epoch
     trainer.extend(extensions.LogReport(trigger=display_interval))
-    trainer.extend(reconstruct_hr_img(gen, os.path.join(args.base, args.out), train),trigger=evaluation_interval,priority=extension.PRIORITY_WRITER)
+    trainer.extend(reconstruct_hr_img(gen,os.path.join(args.base, args.out),train),trigger=evaluation_interval,priority=extension.PRIORITY_WRITER)
 
     # Print a progress bar to stdout
     trainer.extend(extensions.ProgressBar(update_interval=10))

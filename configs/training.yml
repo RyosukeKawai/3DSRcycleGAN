@@ -2,13 +2,15 @@ batchsize: 5
 iteration: 100000
 display_interval: 100
 snapshot_interval: 1000
-evaluation_interval: 5000
+evaluation_interval: 2000
 
 patch:
-  patchside: 32
-  interval: 28
+  patchside: 64
+  lr_patchside: 8
+  interval: 32
   lrmax: 255.0
   lrmin: 0.0
+  upsampling_rate: 8
 
 network:
   fn: model.py
@@ -17,7 +19,7 @@ updater:
   fn: updater.py
 
 adam:
-  alpha: 0.00001
+  alpha: 0.0001
   beta1: 0.9
   beta2: 0.999
 

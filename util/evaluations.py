@@ -64,7 +64,7 @@ def calc_psnr(gt, img):
     @param gt: ground truth
     @param: img: input image
     """
-    psnr_const = psnr(gt, img, dynamic_range =255)
+    psnr_const = psnr(gt, img, data_range=255)
     return psnr_const
 
 def calc_ssim(gt, img):
@@ -73,5 +73,5 @@ def calc_ssim(gt, img):
     @param gt: ground truth
     @param: img: input image
     """
-    ssim_const = ssim(gt, img, dynamic_range =255, gaussian_weights=True, use_sample_covariance=False)
+    ssim_const = ssim(gt, img, data_range=255, gaussian_weights=True, use_sample_covariance=False)
     return ssim_const

@@ -1,0 +1,6 @@
+patch:
+  patchside: 32
+  interval: 28
+
+dataset:
+  training_fn: configs/list_for_calc_std_mean.txt

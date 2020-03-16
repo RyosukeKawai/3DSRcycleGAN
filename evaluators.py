@@ -46,44 +46,69 @@ class SRResNetEvaluator(chainer.training.extensions.Evaluator):
         return summary.compute_mean()
 
 
-def reconstruct_hr_img(gen, gen2,out_dir, dataset, rows=5, cols=5, converter=chainer.dataset.concat_examples):
+def reconstruct_hr_img(gen,out_dir, dataset, rows=5, cols=5, converter=chainer.dataset.concat_examples):
     idx = random.sample(range(0, dataset.__len__()), k=rows * cols)
-    patches, _ = converter(dataset[idx], device=-1)
+    patches, patches2 = converter(dataset[idx], device=-1)
 
     @chainer.training.make_extension()
     def evaluation(trainer):
         xp = gen.xp
-
-        x = chainer.Variable(xp.array(patches, dtype=xp.float32))
+        LR = chainer.Variable(xp.array(patches, dtype=xp.float32))
+        HR = chainer.Variable(xp.array(patches2, dtype=xp.float32))
 
         with chainer.using_config('train', False), chainer.using_config('enable_backprop', False):
-           y = gen(x)
-           z = gen2(y)
+           y = gen(LR)#LR-HR
+           z = F.average_pooling_3d(y,8,8,0)#LR-HR-LR
+           a=F.average_pooling_3d(HR,8,8,0)#HR-LR
+           b=gen(a)#HR-LR-HR
+           
 
         y = chainer.backends.cuda.to_cpu(y.array)
-        x = chainer.backends.cuda.to_cpu(x.array)
+        LR = chainer.backends.cuda.to_cpu(LR.array)
         z = chainer.backends.cuda.to_cpu(z.array)
 
+        a = chainer.backends.cuda.to_cpu(a.array)
+        HR = chainer.backends.cuda.to_cpu(HR.array)
+        b = chainer.backends.cuda.to_cpu(b.array)
+
+
         y = adjust_array_for_output(y, rows, cols, range_type='0')
-        x = adjust_array_for_output(x, rows, cols, range_type='0')
+        LR = adjust_array_for_output(LR, rows, cols, range_type='0')
         z = adjust_array_for_output(z, rows, cols, range_type='0')
+
+        a = adjust_array_for_output(a, rows, cols, range_type='0')
+        HR = adjust_array_for_output(HR, rows, cols, range_type='0')
+        b = adjust_array_for_output(b, rows, cols, range_type='0')
+
+
 
         preview_dir = '{}/preview'.format(out_dir)
         if not os.path.exists(preview_dir):
             os.makedirs(preview_dir)
 
-        preview_path = '{}/LR_to_HR_{}.png'.format(preview_dir, trainer.updater.iteration)
+        preview_path = '{}/LR_HR_{}.png'.format(preview_dir, trainer.updater.iteration)
         sitkImg = sitk.GetImageFromArray(y)
         sitk.WriteImage(sitkImg, preview_path)
 
-        preview_path = '{}/HR_to_LR_{}.png'.format(preview_dir, trainer.updater.iteration)
+        preview_path = '{}/LR_HR_LR{}.png'.format(preview_dir, trainer.updater.iteration)
         sitkImg = sitk.GetImageFromArray(z)
         sitk.WriteImage(sitkImg, preview_path)
 
-        preview_path = '{}/org_{}.png'.format(preview_dir, trainer.updater.iteration)
-        sitkImg = sitk.GetImageFromArray(x)
+        preview_path = '{}/org_LR_{}.png'.format(preview_dir, trainer.updater.iteration)
+        sitkImg = sitk.GetImageFromArray(LR)
         sitk.WriteImage(sitkImg, preview_path)
 
+        preview_path = '{}/HR_LR_{}.png'.format(preview_dir, trainer.updater.iteration)
+        sitkImg = sitk.GetImageFromArray(a)
+        sitk.WriteImage(sitkImg, preview_path)
+
+        preview_path = '{}/HR_LR_HR_{}.png'.format(preview_dir, trainer.updater.iteration)
+        sitkImg = sitk.GetImageFromArray(b)
+        sitk.WriteImage(sitkImg, preview_path)
+
+        preview_path = '{}/org_HR_{}.png'.format(preview_dir, trainer.updater.iteration)
+        sitkImg = sitk.GetImageFromArray(HR)
+        sitk.WriteImage(sitkImg, preview_path)
     return evaluation
 
 

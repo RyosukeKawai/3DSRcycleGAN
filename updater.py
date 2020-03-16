@@ -14,6 +14,7 @@ from chainer.dataset import concat_examples
 from chainer import Variable
 import random
 
+
 def cropping(input, ref):
     ref_map=np.zeros((ref,ref,ref))
     rZ, rY, rX =ref_map.shape
@@ -29,10 +30,11 @@ def cropping(input, ref):
 
 class CinCGANUpdater(chainer.training.StandardUpdater):
     def __init__(self, *args, **kwargs):
-        self.gen_SR,self.gen2,self.disY= kwargs.pop("models")
+        self.gen_SR,self.disY= kwargs.pop("models")
         super(CinCGANUpdater, self).__init__(*args, **kwargs)
 
-        self._lambda_A = 10
+        self._lambda_A = 1.0#L-H-L
+        self._lambda_B = 1.0#H-L-H
 
 
 
@@ -54,45 +56,61 @@ class CinCGANUpdater(chainer.training.StandardUpdater):
 
 
 
+
     def update_core(self):
         gen1_optimizer = self.get_optimizer("gen")#load optimizer called "gen"
-        gen2_optimizer = self.get_optimizer("gen2")
+        #gen2_optimizer = self.get_optimizer("gen2")
         disY_optimizer = self.get_optimizer("disY")
+        disX_optimizer = self.get_optimizer("disX")
         batch = self.get_iterator("main").next()#iterator
         #x=lr y=hr
         x, y = self.converter(batch, self.device)
 
         gen_SR=self.gen_SR
-        gen2=self.gen2
+        #gen2=self.gen2
         disY=self.disY
+        #disX=self.disX
 
-        # y_fake , y_fake_32 = gen_SR(x)# G(x)
-        # x_fake_y , x_fake_y_32 = gen2(y_fake)
-
-        # x_fake , x_fake_32 = gen2(y)
-        # y_fake_x , y_fake_x_32=gen_SR(x_fake)
 
         y_fake=gen_SR(x) # LR-HR
-        x_fake_y=gen2(y_fake)#LR-HR-LR
+        #smoothing+downsampling = average pooling
+        x_fake_y=F.average_pooling_3d(y_fake,8,8,0)# 32*32*32 ⇒ 4*4*4 or 64*64*64 ⇒　8*8*8
 
-        #discriminator
+        #x_fake_y=gen2(y_fake)#LR-HR-LR
+
+        #discriminator HR domain
         y_real_dis=disY(y)
         y_fake_dis=disY(y_fake)
-
         disY_optimizer.update(self.loss_dis, disY, y_fake_dis, y_real_dis)
 
 
-        loss_cyc_LHL = self._lambda_A*F.mean_absolute_error(x,x_fake_y)#loss cycLHL
-        loss_adv =self.loss_gen_SR(gen_SR,y_fake_dis)
+        #discriminator LR domain
+        # x_real_dis=disX(x)
+        # x_fake_dis=disX(x_fake_y)
+        # disX_optimizer.update(self.loss_dis, disX, x_fake_dis, x_real_dis)
 
-        loss_GEN=loss_cyc_LHL+loss_adv
+
+        #generator
+        y_fake_x = gen_SR(F.average_pooling_3d(y,8,8,0)) #HR-LR-HR
+
+        loss_cyc_LHL = self._lambda_A*F.mean_absolute_error(x,x_fake_y)#loss cycLHL
+        loss_cyc_HLH = self._lambda_B * F.mean_absolute_error(y, y_fake_x)  # loss cycHLH
+
+        loss_adv_sr =self.loss_gen_SR(gen_SR,y_fake_dis)
+        #loss_adv_dw = self.loss_gen_SR(gen2, x_fake_dis)
+
+        loss_GEN=loss_cyc_LHL+loss_adv_sr+loss_cyc_HLH
 
 
         gen_SR.cleargrads()
-        gen2.cleargrads()
+        #gen2.cleargrads()
         loss_GEN.backward()
         gen1_optimizer.update()
-        gen2_optimizer.update()
+        #gen2_optimizer.update()
+
+        chainer.report({'loss_cyc_LHL': loss_cyc_LHL})
+        chainer.report({'loss_cyc_HLH': loss_cyc_HLH})
+        chainer.report({'loss_GEN': loss_GEN})
 
 
 
@@ -118,7 +136,7 @@ class preUpdater(chainer.training.StandardUpdater):
         #x-PseudoLR y-MicroCT
         x, y = self.converter(batch, self.device)
 
-        y_fake= gen1(x)
+        y_fake= gen1(x)# LR-HR y_fake.shape=(5,1,32,32,32) type=chainer.variable.variable
         x_fake_y = gen2(y_fake)
 
         x_fake = gen2(y)
@@ -138,6 +156,7 @@ class preUpdater(chainer.training.StandardUpdater):
         gen1_optimizer.update()
         gen2_optimizer.update()
 
+        chainer.report({'loss_cyc_LHL': loss_cyc_LHL})
         chainer.report({'loss_cyc_LHL': loss_cyc_LHL})
 
 

@@ -10,16 +10,17 @@ import pandas as pd
 import chainer
 import util.ioFunction_version_4_3 as IO
 import argparse
+import random
 
 class CycleganDataset(chainer.dataset.DatasetMixin):
-    def __init__(self, root, path, patch_side, min_max=[], augmentation=False):
+    def __init__(self, root, path, patch_side, min_max=[]):
         print(' Initilaze dataset ')
 
         self._root = root
         self._patch_side = patch_side
         self._patch_size = int(self._patch_side**3)
         self._min, self._max = min_max
-        self._augmentation = augmentation
+
         # self._edge = 16
 
         # Read path to hr data and lr data
@@ -38,14 +39,15 @@ class CycleganDataset(chainer.dataset.DatasetMixin):
         ...
         xn,yn,zn
         """
-        coordinate_csv_path = path_pairs[0][0]#LR 41529
-        coordinate_csv_path2 = path_pairs[0][1]#HR 48994pathes
+        coordinate_csv_path = path_pairs[0][0]#LR 45724
+        coordinate_csv_path2 = path_pairs[0][1]#HR 44355
         self._coordinate = pd.read_csv(os.path.join(self._root, coordinate_csv_path), names=("x","y","z")).values.tolist()
-        self._coordinate_add = self.coordinate.sample(n=len(self._coordinate2)-len(self.coordinate),random_state=0)
-        self._coordinate = self._coordinate+self._coordinate_add
-
         self._coordinate2 = pd.read_csv(os.path.join(self._root, coordinate_csv_path2),
                                        names=("x", "y", "z")).values.tolist()
+        self._coordinate_add = random.sample(self._coordinate,len(self._coordinate)-len(self._coordinate2))
+        self._coordinate2 = self._coordinate2+self._coordinate_add
+
+
 
 
 
@@ -89,31 +91,17 @@ class CycleganDataset(chainer.dataset.DatasetMixin):
         # return (lr, hr)
         # I assume length of dataset is one
         """
+        #lr
         x, y, z = self._coordinate[i]
-        x_s, x_e = x, x + self._patch_side
-        y_s, y_e = y, y + self._patch_side
-        z_s, z_e = z, z + self._patch_side
+        x_s, x_e = x, x + 8
+        y_s, y_e = y, y + 8
+        z_s, z_e = z, z + 8
 
-        # hr (lrに対してランダムな行での挿入)
+        # hr
         x_h, y_h, z_h = self._coordinate2[i]
         x_sh, x_eh = x_h, x_h + self._patch_side
         y_sh, y_eh = y_h, y_h + self._patch_side
         z_sh, z_eh = z_h, z_h + self._patch_side
-
-        # x, y, z = self._coordinate[i]
-        # x_s, x_e = x, x + self._patch_side+self._edge
-        # y_s, y_e = y, y + self._patch_side+self._edge
-        # z_s, z_e = z, z + self._patch_side+self._edge
-        #
-        # # hr (lrに対してランダムな行での挿入)
-        # x_h, y_h, z_h = self._coordinate2[i]
-        # x_sh, x_eh = x_h, x_h + self._patch_side + self._edge
-        # y_sh, y_eh = y_h, y_h + self._patch_side + self._edge
-        # z_sh, z_eh = z_h, z_h + self._patch_side + self._edge
-
-        if self._augmentation:
-            return self.transform(self._dataset[0][0][np.newaxis, z_s:z_e, y_s:y_e, x_s:x_e],
-                                  self._dataset[0][1][np.newaxis, z_sh:z_eh, y_sh:y_eh, x_sh:x_eh])
 
         return self._dataset[0][0][np.newaxis, z_s:z_e, y_s:y_e, x_s:x_e], \
                self._dataset[0][1][np.newaxis, z_sh:z_eh, y_sh:y_eh, x_sh:x_eh]
