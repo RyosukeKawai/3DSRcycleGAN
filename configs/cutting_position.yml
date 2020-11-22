@@ -1,9 +1,0 @@
-num:
-  number: 1500
-  start_position: 1000
-
-margin:
-  patch_margin: 5
-
-cutting_position:
-  training_fn: configs/list_for_calc_std_mean.txt

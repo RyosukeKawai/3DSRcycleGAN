@@ -1,25 +1,24 @@
 #coding: utf-8
-"""
-* @auther ryosuke
-* reference source :https://github.com/zEttOn86/3D-SRGAN
-"""
 import os, sys, time, random
 import numpy as np
 import argparse, yaml, shutil
 import chainer
 from chainer import training
 from chainer.datasets import TransformDataset
+from chainer.training import extension
+from chainer.training import extensions
 
 sys.path.append(os.path.dirname(__file__))
 
-from model import Generator, Discriminator,Generator2
-from updater import CinCGANUpdater
-from dataset import CycleganDataset
+from interpolate_resnet import Generator
+from encoder_based_dis import Discriminator
+
+from updater import SrganUpdater
+from dataset import InterpolateDataset
+from evaluators import reconstruct_hr_img, segment_hr_img
 import utils.yaml_utils  as yaml_utils
-from utils.transform import transform
-from evaluators import reconstruct_hr_img
-from chainer.training import extension
-from chainer.training import extensions
+import utils.ioFunctions as IO
+from utils.transform import transform, flip_transform
 
 def reset_seed(seed=0):
     random.seed(seed)
@@ -27,33 +26,68 @@ def reset_seed(seed=0):
     if chainer.backends.cuda.available:
         chainer.backends.cuda.cupy.random.seed(seed)
 
+def save_file(args, configs):
+    """https://github.com/pfnet-research/sngan_projection/blob/master/train.py"""
+    base_dir = args.base
+    result_dir = os.path.join(base_dir, args.out)
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
+    if not os.path.exists('{}/init'.format(result_dir)):
+        os.makedirs('{}/init'.format(result_dir))
+
+    def copy_to_result_dir(fn, result_dir):
+        bfn = os.path.basename(fn)
+        shutil.copy(fn, '{}/{}'.format(result_dir, bfn))
+
+    copy_to_result_dir(
+        os.path.join(base_dir, configs.filename['training']), result_dir)
+    copy_to_result_dir(
+        os.path.join(base_dir, configs.filename['updater']), result_dir)
+    # copy_to_result_dir(
+    #     os.path.join(base_dir, configs.filename['gen_model']), result_dir)
+    # copy_to_result_dir(
+    #     os.path.join(base_dir, configs.filename['dis_model']), result_dir)
+    copy_to_result_dir(
+        os.path.join(base_dir, configs.filename['dataset']), result_dir)
+    # copy_to_result_dir(
+    #     os.path.join(base_dir, configs.filename['evaluator']), result_dir)
+    # copy_to_result_dir(
+    #     os.path.join(base_dir, configs.dataset['training_list']), result_dir)
+    # copy_to_result_dir(
+    #     os.path.join(base_dir, configs.model['gen_init']), '{}/init'.format(result_dir))
+    copy_to_result_dir(
+        os.path.join(base_dir, args.config_path), result_dir)
+    IO.save_args(result_dir, args)
+    return
+
 def main():
-    parser = argparse.ArgumentParser(description='Train CycleGAN')
+    parser = argparse.ArgumentParser(description='Train SRGAN')
     parser.add_argument('--gpu', '-g', type=int, default=-1,
                         help='GPU ID (negative value indicates CPU)')
     parser.add_argument('--base', '-B', default=os.path.dirname(os.path.abspath(__file__)),
                         help='base directory path of program files')
     parser.add_argument('--config_path', type=str, default='configs/training.yml',
                         help='path to config file')
-    parser.add_argument('--out', '-o', default= 'results/training',
+    parser.add_argument('--out', '-o', default= 'results/training_{}'.format(time.strftime('%Y-%m-%d_%H-%M-%S')),
                         help='Directory to output the result')
 
     parser.add_argument('--model', '-m', default='',
                         help='Load model data')
-
-    parser.add_argument('--model2', '-m2', default='',
-                        help='Load model data')
-
-
     parser.add_argument('--resume', '-res', default='',
                         help='Resume the training from snapshot')
 
     parser.add_argument('--root', '-R', default=os.path.dirname(os.path.abspath(__file__)),
-                        help='Root directory path of input image')
+                        help='Root directory path of input data')
+
+    parser.add_argument('--train', '-T', default=os.path.dirname(os.path.abspath(__file__)),
+                        help='Train data type')
 
     args = parser.parse_args()
 
     config = yaml_utils.Config(yaml.load(open(os.path.join(args.base, args.config_path))))
+
+    print('----- Save configs -----')
+    save_file(args, config)
 
     print('GPU: {}'.format(args.gpu))
     print('# Minibatch-size: {}'.format(config.batchsize))
@@ -61,35 +95,44 @@ def main():
     print('Learning Rate: {}'.format(config.adam['alpha']))
     print('')
 
-    #load the dataset
-    print('----- Load dataset -----')
-    train = CycleganDataset(args.root,
-                            os.path.join(args.base, config.dataset['training_fn']),
-                            config.patch['patchside'],
-                            [config.patch['lrmin'], config.patch['lrmax']],)
-    transformed_train=TransformDataset(train,transform)
-    train_iter = chainer.iterators.MultiprocessIterator(transformed_train, batch_size=config.batchsize,n_processes=config.batchsize)
+
+    # Read path to hr data and lr data
+    path_pairs = []
+    with open(os.path.join(args.base, config.dataset[args.train])) as paths_file:
+        for line in paths_file:
+            line = line.split()
+            if not line: continue
+            path_pairs.append(line[:])
+
+    min =float(path_pairs[2][0])
+    max =float(path_pairs[2][1])
 
     print('----- Set up model ------')
     gen = Generator()
-    #gen2 = Generator2()
-    disY = Discriminator()
-    #disX = Discriminator()
-    # chainer.serializers.load_npz(args.model, gen)
-    # chainer.serializers.load_npz(args.model2, gen2)
-
-
+    if args.model:
+        print('Initialize generator parameters')
+        chainer.serializers.load_npz(
+                                    args.model, gen)
+    dis = Discriminator()
     if args.gpu >= 0:
-        chainer.backends.cuda.set_max_workspace_size(1024 * 1024 * 1024) # 1GB
+        chainer.global_config.autotune = True
+        chainer.backends.cuda.set_max_workspace_size(512 * 1024 * 1024) # 1GB
         chainer.backends.cuda.get_device_from_id(args.gpu).use()
         gen.to_gpu()
-        #gen2.to_gpu()
-        disY.to_gpu()
-        #disX.to_gpu()
+        dis.to_gpu()
+
+    print('----- Load dataset -----')
+    train = InterpolateDataset(args.root,
+                        os.path.join(args.base, config.dataset[args.train]),
+                        config.patch['patchside'],
+                        [min, max])
+    transformed_train = TransformDataset(train, flip_transform)
+    train_iter = chainer.iterators.MultiprocessIterator(transformed_train, batch_size=config.batchsize, n_processes=config.batchsize)
+
 
 
     print('----- Make optimizer -----')
-    def make_optimizer(model, alpha=0.0001, beta1=0.9, beta2=0.999):
+    def make_optimizer(model, alpha=0.00001, beta1=0.9, beta2=0.999):
         optimizer = chainer.optimizers.Adam(alpha=alpha, beta1=beta1, beta2=beta2)
         optimizer.setup(model)
         return optimizer
@@ -97,54 +140,18 @@ def main():
                             alpha=config.adam['alpha'],
                             beta1=config.adam['beta1'],
                             beta2=config.adam['beta2'])
-
-    # gen2_opt = make_optimizer(model = gen2,
-    #                         alpha=config.adam['alpha'],
-    #                         beta1=config.adam['beta1'],
-    #                         beta2=config.adam['beta2'])
-
-    disY_opt = make_optimizer(model = disY,
+    dis_opt = make_optimizer(model = dis,
                             alpha=config.adam['alpha'],
                             beta1=config.adam['beta1'],
                             beta2=config.adam['beta2'])
 
-    # disX_opt = make_optimizer(model = disX,
-    #                         alpha=config.adam['alpha'],
-    #                         beta1=config.adam['beta1'],
-    #                         beta2=config.adam['beta2'])
-
     print('----- Make updater -----')
-    updater = CinCGANUpdater(
-        models = (gen,disY),
+    updater = SrganUpdater(
+        models = (gen, dis),
         iterator = train_iter,
-        optimizer={'gen': gen_opt,'disY': disY_opt},
+        optimizer = {'gen': gen_opt, 'dis': dis_opt},
         device=args.gpu
         )
-
-    print('----- Save configs -----')
-    def create_result_dir(base_dir, output_dir, config_path, config):
-        """https://github.com/pfnet-research/sngan_projection/blob/master/train.py"""
-        result_dir = os.path.join(base_dir, output_dir)
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-        if not os.path.exists('{}/init'.format(result_dir)):
-            os.makedirs('{}/init'.format(result_dir))
-
-        def copy_to_result_dir(fn, result_dir):
-            bfn = os.path.basename(fn)
-            shutil.copy(fn, '{}/{}'.format(result_dir, bfn))
-
-        copy_to_result_dir(
-            os.path.join(base_dir, config_path), result_dir)
-
-        copy_to_result_dir(
-            os.path.join(base_dir, config.network['fn']), result_dir)
-        copy_to_result_dir(
-            os.path.join(base_dir, config.updater['fn']), result_dir)
-        copy_to_result_dir(
-            os.path.join(base_dir, config.dataset['training_fn']), result_dir)
-
-    create_result_dir(args.base,  args.out, args.config_path, config)
 
     print('----- Make trainer -----')
     trainer = training.Trainer(updater,
@@ -156,25 +163,21 @@ def main():
     display_interval = (config.display_interval, 'iteration')
     evaluation_interval = (config.evaluation_interval, 'iteration')
     trainer.extend(extensions.snapshot(filename='snapshot_iter_{.updater.iteration}.npz'),trigger=snapshot_interval)
-    trainer.extend(extensions.snapshot_object(gen, filename='gen_iter_{.updater.iteration}.npz'), trigger=snapshot_interval)
-    #trainer.extend(extensions.snapshot_object(gen2, filename='gen2_iter_{.updater.iteration}.npz'),trigger=snapshot_interval)
-    trainer.extend(extensions.snapshot_object(disY, filename='disY_iter_{.updater.iteration}.npz'), trigger=snapshot_interval)
-    #trainer.extend(extensions.snapshot_object(disX, filename='disX_iter_{.updater.iteration}.npz'), trigger=snapshot_interval)
-
-    # Write a log of evaluation statistics for each epoch
+    trainer.extend(extensions.snapshot_object(gen, filename='gen_iter_{.updater.iteration}.npz'), trigger=evaluation_interval)
+    trainer.extend(extensions.snapshot_object(dis, filename='dis_iter_{.updater.iteration}.npz'), trigger=snapshot_interval)
     trainer.extend(extensions.LogReport(trigger=display_interval))
-    trainer.extend(reconstruct_hr_img(gen,os.path.join(args.base, args.out),train),trigger=evaluation_interval,priority=extension.PRIORITY_WRITER)
-
+    trainer.extend(reconstruct_hr_img(gen, os.path.join(args.base, args.out), train),
+                   trigger=evaluation_interval,
+                   priority=extension.PRIORITY_WRITER)
+    # Print selected entries of the log to stdout
+    #trainer.extend(extensions.PrintReport(['epoch', 'iteration', 'gen/loss', 'elapsed_time']), trigger=display_interval)
     # Print a progress bar to stdout
     trainer.extend(extensions.ProgressBar(update_interval=10))
-
-    # Save two plot images to the result dir
     if extensions.PlotReport.available():
-        trainer.extend(extensions.PlotReport(['gen/loss_gen1'], 'iteration', file_name='gen_loss.png', trigger=display_interval))
-        trainer.extend(extensions.PlotReport(['disY/loss_dis1_fake', 'disY/loss_dis1_real',
-                                              'disY/loss_dis1'], 'iteration', file_name='dis_loss.png', trigger=display_interval))
-        trainer.extend(extensions.PlotReport(['gen/loss_gen',
-                                               'disY/loss_dis1'], 'iteration', file_name='adv_loss.png',trigger=display_interval))
+        trainer.extend(extensions.PlotReport(['gen_loss'], 'iteration', file_name='gen_loss.png', trigger=display_interval))
+        trainer.extend(extensions.PlotReport(['gen_mse'], 'iteration', file_name='gen_mse_loss.png', trigger=display_interval))
+        trainer.extend(extensions.PlotReport(['gen_adv_loss'], 'iteration', file_name='gen_adv_loss.png', trigger=display_interval))
+        trainer.extend(extensions.PlotReport(['dis_loss'], 'iteration', file_name='dis_loss.png', trigger=display_interval))
 
     if args.resume:
         # Resume from a snapshot
@@ -186,5 +189,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-

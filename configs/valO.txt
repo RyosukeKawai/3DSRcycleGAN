@@ -1,0 +1,3 @@
+new/oosaka/PLR/all/PseudoLR.mhd new/oosaka/denoise/MicroCT.mhd
+new/oosaka/val/random_1500/random_1500_val.csv
+0.0 255.0

@@ -1,0 +1,3 @@
+new/1794/PLR/all/PseudoLR.mhd new/1794/denoise/MicroCT.mhd
+new/1794/val/random_1500/random_1500_val.csv
+2059.0 62015.0

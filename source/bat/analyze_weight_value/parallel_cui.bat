@@ -1,5 +1,0 @@
-@echo off
-set /P N=Ç¢Ç≠Ç¬Ç‹ÇÌÇµÇ‹Ç∑Ç©ÅH
-for /L %%i in (1,1,%N%) do (
-start %1
-)

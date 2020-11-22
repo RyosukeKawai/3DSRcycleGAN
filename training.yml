@@ -1,0 +1,41 @@
+batchsize: 5
+pretraining_iteration: 100000
+iteration: 100000
+display_interval: 100
+snapshot_interval: 1000
+evaluation_interval: 5000
+
+patch:
+  patchside: 64
+  interval: 32
+  lrmax: 255.0
+  lrmin: 0.0
+  upsampling_rate: 8
+
+model:
+  gen_init: weight_init/SRResNet/pretraining_2019-10-14_11-23-32/gen_iter_100000.npz
+
+pretraining_adam:
+  alpha: 0.0001
+  beta1: 0.9
+  beta2: 0.999
+
+adam:
+  alpha: 0.00001
+  beta1: 0.9
+  beta2: 0.999
+
+dataset:
+  training_list: configs/using_lr/training_list.txt
+  val_list: configs/using_lr/val_list.txt
+  test_list: configs/using_lr/test_list.txt
+
+filename:
+  pretraining: pretraining.py
+  training: training.py
+  updater: updater.py
+  gen_model: gen_model/interpolate_resnet.py
+  dis_model: dis_model/encoder_based_dis.py
+  dataset: dataset.py
+  evaluator: evaluators.py
+  inference: inference.py

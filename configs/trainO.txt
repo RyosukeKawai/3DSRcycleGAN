@@ -1,0 +1,3 @@
+new/oosaka/denoise/MicroCT_total83403_interval32.csv
+new/oosaka/PLR/all/PseudoLR.mhd new/oosaka/denoise/MicroCT.mhd
+0. 255.

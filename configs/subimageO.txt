@@ -1,0 +1,9 @@
+subimage-test/osaka/lr.mhd subimage-test/osaka/subimageO.mhd
+0.0 255.0
+
+
+
+
+
+
+

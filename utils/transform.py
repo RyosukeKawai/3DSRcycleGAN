@@ -2,7 +2,25 @@
 import os, sys, time
 import numpy as np
 sys.path.append(os.path.dirname(__file__))
-import utils.ioFunctions as IO
+
+
+def flip_transform(in_data):
+    img1, img2= in_data
+    # Random right left transform
+    if np.random.rand() > 0.5:
+        img1 = img1[:, :, :, ::-1]
+        img2 = img2[:, :, :, ::-1]
+
+    if np.random.rand() > 0.5:
+        img1 = img1[:, :, ::-1, :]
+        img2 = img2[:, :, ::-1, :]
+
+    if np.random.rand() > 0.5:
+        img1 = img1[:, ::-1, :, :]
+        img2 = img2[:, ::-1, :, :]
+
+    #img += np.random.uniform(size=img1.shape, low=0, high=1./128)
+    return img1, img2
 
 def transform(in_data):
     img1, img2 = in_data
@@ -12,16 +30,19 @@ def transform(in_data):
     surface = np.random.randint(0, 6)
     img1 = top_of_the_world(img1, surface)
     img2 = top_of_the_world(img2, surface)
+    # img3 = top_of_the_world(img3, surface)
 
     # rotation
     rot90_scalar = np.random.randint(0, 4)
     img1 = rotate_img(img1, rot90_scalar, axis='z')
     img2 = rotate_img(img2, rot90_scalar, axis='z')
+    # img3 = rotate_img(img3, rot90_scalar, axis='z')
 
     # For mirror image
     if np.random.rand() > 0.5:
         img1 = img1[:, :, :, ::-1]
         img2 = img2[:, :, :, ::-1]
+        # img3 = img3[:, :, :, ::-1]
 
     return img1, img2
 

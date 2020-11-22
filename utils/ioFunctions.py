@@ -84,7 +84,7 @@ def write_raw(Data, path):
     #fid.close()
     return True
 
-def read_mhd_and_raw(path, numpyFlag=True):
+def read_mhd_and_raw(path, numpyFlag=True, spacingFlag=False):
     """
     This function use sitk
     path : Meta data path
@@ -96,9 +96,9 @@ def read_mhd_and_raw(path, numpyFlag=True):
     img = sitk.ReadImage(path)
     if not numpyFlag:
         return img
-
-    return sitk.GetArrayFromImage(img)#(img(x,y,z)->numpyArray(z,y,x))
-
+    if numpyFlag and not spacingFlag:
+        return sitk.GetArrayFromImage(img) #(img(x,y,z)->numpyArray(z,y,x))
+    return sitk.GetArrayFromImage(img), tuple(reversed(img.GetSpacing()))
 
 def write_mhd_and_raw(img, path, spacing=[]):
     """

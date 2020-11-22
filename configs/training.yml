@@ -1,29 +1,48 @@
 batchsize: 5
+pretraining_iteration: 100000
 iteration: 100000
 display_interval: 100
-snapshot_interval: 1000
-evaluation_interval: 2000
+snapshot_interval: 100000
+evaluation_interval: 1000
 
 patch:
   patchside: 64
-  lr_patchside: 8
   interval: 32
-  lrmax: 255.0
-  lrmin: 0.0
   upsampling_rate: 8
+  lr_patchside: 8
 
-network:
-  fn: model.py
+model:
+  gen_init: weight_init/SRResNet/pretraining_2019-10-11_02-10-46/gen_iter_100000.npz
 
-updater:
-  fn: updater.py
-
-adam:
+pretraining_adam:
   alpha: 0.0001
   beta1: 0.9
   beta2: 0.999
 
+adam:
+  alpha: 0.00001
+  beta1: 0.9
+  beta2: 0.999
+
 dataset:
-  training_fn: configs/training_list.txt
-  val_fn: configs/val_list.txt
-  test_fn: configs/test_list.txt
+  train1784: configs/training_list.txt
+  train1794: configs/train1794.txt
+  train1802: configs/train1802.txt
+  trainO: configs/trainO.txt
+  subimage1784: configs/subimage1784.txt
+  subimage1794: configs/subimage1794.txt
+  subimage1802: configs/subimage1802.txt
+  subimageO: configs/subimageO.txt
+  val1784: configs/val1784.txt
+  val1794: configs/val1794.txt
+  val1802: configs/val1802.txt
+  valO: configs/valO.txt
+  test_list: configs/using_lr/test_list.txt
+
+filename:
+  pretraining: pretraining.py
+  training: training.py
+  updater: updater.py
+  gen_model: interpolate_resnet.py
+  dataset: dataset.py
+  evaluator: evaluators.py

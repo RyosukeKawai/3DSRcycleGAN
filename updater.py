@@ -1,173 +1,118 @@
 ﻿#coding:utf-8
 """
-* @auther ryosuke
-* reference source :https://github.com/zEttOn86/3D-SRGAN
+* Define updater
+* @auther towawa
 """
 
 #default
-import os, time, sys, copy
+import os, time, sys
 import numpy as np
 import chainer
 import chainer.links as L
 import chainer.functions as F
-from chainer.dataset import concat_examples
-from chainer import Variable
-import random
+import SimpleITK as sitk
 
-
-def cropping(input, ref):
-    ref_map=np.zeros((ref,ref,ref))
-    rZ, rY, rX =ref_map.shape
-    _, _, iZ, iY, iX = input.shape
-    edgeZ, edgeY, edgeX = (iZ - rZ)//2, (iY - rY)//2, (iX - rX)//2
-    edgeZZ, edgeYY, edgeXX = iZ-edgeZ, iY-edgeY, iX-edgeX
-
-    _, X, _ = F.split_axis(input, (edgeX, edgeXX), axis=4)
-    _, X, _ = F.split_axis(X, (edgeY, edgeYY), axis=3)
-    _, X, _ = F.split_axis(X, (edgeZ, edgeZZ), axis=2)
-
-    return X
-
-class CinCGANUpdater(chainer.training.StandardUpdater):
+class SrganUpdater(chainer.training.StandardUpdater):
     def __init__(self, *args, **kwargs):
-        self.gen_SR,self.disY= kwargs.pop("models")
-        super(CinCGANUpdater, self).__init__(*args, **kwargs)
+        self.gen, self.dis = kwargs.pop("models")
+        super(SrganUpdater, self).__init__(*args, **kwargs)
+        self._lambda0 = 0.001
 
-        self._lambda_A = 1.0#L-H-L
-        self._lambda_B = 1.0#H-L-H
-
-
-
-    def loss_dis(self, dis, y_fake, y_real):
-        batchsize = len(y_fake)
-        L1 = F.sum(F.softplus(-y_real)) / batchsize
-        L2 = F.sum(F.softplus(y_fake)) / batchsize
-        loss = L1+L2
-        chainer.report({'loss':loss, 'L1':L1, 'L2':L2}, dis)
+    def vanilla_dis_loss(self, y_fake, y_real):
+        """
+        vanilla loss e.g. dcgans loss
+        Args:
+            y_fake: Output when generator output is put into discriminator
+            y_real: Output when real image is put into discriminator
+        """
+        L1 = F.mean(F.softplus(-y_real))
+        L2 = F.mean(F.softplus(y_fake))
+        loss = L1 + L2
+        #chainer.reporter.report({'dis/L1':L1, 'dis/L2':L2})
         return loss
 
-    def loss_gen_SR(self, gen,y_fake):
-        batchsize = len(y_fake)
-        L1 = F.sum(F.softplus(-y_fake)) / batchsize
+    def vanilla_gen_loss(self, y_fake):
+        """
+        vanilla loss for generator
+        Args:
+            y_fake: Output when generator output is put into discriminator
+        """
+        loss = F.mean(F.softplus(-y_fake))
+        return loss
 
-        chainer.report({'L1': L1}, gen)
-        return L1
+    def hinge_dis_loss(self, y_fake, y_real):
+        L1 = F.mean(F.relu(1. - y_real))
+        L2 = F.mean(F.relu(1. + y_fake))
+        loss = L1 + L2
+        return loss
 
+    def hinge_gen_loss(self, y_fake):
+        loss = -F.mean(y_fake)
+        return loss
 
+    def mse_loss(self, x_real, x_fake):
+        """
+        MSE loss
+        Args:
+            x_real: ground truth
+            x_fake: generator output
+        """
+        loss = F.mean_squared_error(x_real, x_fake)
+        return loss
 
+    def rotation_loss(self, predict, ground_truth):
+        """
+        Auxiliary rotation loss
+        Args:
+            predict: predicted label
+            ground_truth:
+        """
+        loss = F.softmax_cross_entropy(predict, ground_truth)
+        return loss
 
+    def weighted_cross_entropy(self, gt, logits, xp, dims=(2,3,4)):
+        batchsize, ch, D, H, W = logits.shape
+        pos_weight = F.reshape(F.sum(F.softmax(logits), axis=dims)[:, 1], (-1, 1))
+        pos_weight = (D*H*W - pos_weight) / pos_weight
+        weight = F.concat([chainer.Variable(xp.ones((batchsize, 1), dtype=xp.float32)), pos_weight], axis=1)
 
-    def update_core(self):
-        gen1_optimizer = self.get_optimizer("gen")#load optimizer called "gen"
-        #gen2_optimizer = self.get_optimizer("gen2")
-        disY_optimizer = self.get_optimizer("disY")
-        disX_optimizer = self.get_optimizer("disX")
-        batch = self.get_iterator("main").next()#iterator
-        #x=lr y=hr
-        x, y = self.converter(batch, self.device)
-
-        gen_SR=self.gen_SR
-        #gen2=self.gen2
-        disY=self.disY
-        #disX=self.disX
-
-
-        y_fake=gen_SR(x) # LR-HR
-        #smoothing+downsampling = average pooling
-        x_fake_y=F.average_pooling_3d(y_fake,8,8,0)# 32*32*32 ⇒ 4*4*4 or 64*64*64 ⇒　8*8*8
-
-        #x_fake_y=gen2(y_fake)#LR-HR-LR
-
-        #discriminator HR domain
-        y_real_dis=disY(y)
-        y_fake_dis=disY(y_fake)
-        disY_optimizer.update(self.loss_dis, disY, y_fake_dis, y_real_dis)
-
-
-        #discriminator LR domain
-        # x_real_dis=disX(x)
-        # x_fake_dis=disX(x_fake_y)
-        # disX_optimizer.update(self.loss_dis, disX, x_fake_dis, x_real_dis)
-
-
-        #generator
-        y_fake_x = gen_SR(F.average_pooling_3d(y,8,8,0)) #HR-LR-HR
-
-        loss_cyc_LHL = self._lambda_A*F.mean_absolute_error(x,x_fake_y)#loss cycLHL
-        loss_cyc_HLH = self._lambda_B * F.mean_absolute_error(y, y_fake_x)  # loss cycHLH
-
-        loss_adv_sr =self.loss_gen_SR(gen_SR,y_fake_dis)
-        #loss_adv_dw = self.loss_gen_SR(gen2, x_fake_dis)
-
-        loss_GEN=loss_cyc_LHL+loss_adv_sr+loss_cyc_HLH
-
-
-        gen_SR.cleargrads()
-        #gen2.cleargrads()
-        loss_GEN.backward()
-        gen1_optimizer.update()
-        #gen2_optimizer.update()
-
-        chainer.report({'loss_cyc_LHL': loss_cyc_LHL})
-        chainer.report({'loss_cyc_HLH': loss_cyc_HLH})
-        chainer.report({'loss_GEN': loss_GEN})
-
-
-
-class preUpdater(chainer.training.StandardUpdater):
-    def __init__(self, *args, **kwargs):
-        self.gen1 ,self.gen2= kwargs.pop("models")#self.gen1 , self.gen2= kwargs.pop("models")
-        super(preUpdater, self).__init__(*args, **kwargs)
-        self._lambda_A = 1 #preは１
-
-
-    def loss_cyc_l1(self, fake, real):
-        return F.mean_absolute_error(fake, real)
+        loss = -1 * F.mean(F.sum(F.log_softmax(logits) * gt, axis=dims) * weight)
+        return loss
 
     def update_core(self):
+        gen_optimizer = self.get_optimizer("gen")#load optimizer called "gen"
+        dis_optimizer = self.get_optimizer("dis")
 
-        #optimizer設置
-        gen1_optimizer=self.get_optimizer("gen")
-        gen2_optimizer = self.get_optimizer("gen2")
-        gen1=self.gen1
-        gen2 = self.gen2
         batch = self.get_iterator("main").next()#iterator
+        lr_real, hr_real = self.converter(batch, self.device)
 
-        #x-PseudoLR y-MicroCT
-        x, y = self.converter(batch, self.device)
+        gen, dis = self.gen, self.dis#generator and discriminator
 
-        y_fake= gen1(x)# LR-HR y_fake.shape=(5,1,32,32,32) type=chainer.variable.variable
-        x_fake_y = gen2(y_fake)
+        """
+        Update for discriminator
+        """
+        y_real = dis(hr_real)
 
-        x_fake = gen2(y)
-        y_fake_x = gen1(x_fake)
+        hr_fake = gen(lr_real)
 
-        # # Generator_loss
-        # x = cropping(x, 32)#cropping
-        # y = cropping(y, 32)  # cropping
+        y_fake = dis(hr_fake)
 
-        loss_cyc_LHL = self._lambda_A*self.loss_cyc_l1(x, x_fake_y)
+        dis_loss = self.vanilla_dis_loss(y_fake=y_fake, y_real=y_real)
+        dis.cleargrads()
+        dis_loss.backward()
+        dis_optimizer.update()
+        chainer.reporter.report({'dis_loss':dis_loss})
 
+        """
+        Update for generator
+        """
+        gen_mse_loss = self.mse_loss(x_real=hr_real, x_fake=hr_fake)
+        gen_adv_loss = self.vanilla_gen_loss(y_fake=y_fake)
 
-        # gen update
-        gen1.cleargrads()
-        gen2.cleargrads()
-        loss_cyc_LHL.backward()
-        gen1_optimizer.update()
-        gen2_optimizer.update()
-
-        chainer.report({'loss_cyc_LHL': loss_cyc_LHL})
-        chainer.report({'loss_cyc_LHL': loss_cyc_LHL})
-
-
-
-
-
-
-
-
-
-
-
-
-
+        gen_loss = gen_mse_loss + self._lambda0 * gen_adv_loss
+        gen.cleargrads()
+        gen_loss.backward()
+        gen_optimizer.update()
+        chainer.reporter.report({'gen_loss':gen_loss,
+                                'gen_adv_loss':gen_adv_loss,
+                                'gen_mse_loss':gen_mse_loss})

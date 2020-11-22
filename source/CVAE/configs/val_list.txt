@@ -1,2 +1,0 @@
-64/validation/denoising/MicroCT_total702_interval32.csv
-data/validation/denoising/MicroCT.mhd
